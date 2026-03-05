@@ -50,24 +50,23 @@ const initDb = async () => {
         id SERIAL PRIMARY KEY,
         user_id INTEGER NOT NULL,
         type TEXT NOT NULL,
-        timestamp TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+        timestamp TIMESTAMP DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Jakarta'),
         photo TEXT,
         latitude DOUBLE PRECISION,
         longitude DOUBLE PRECISION,
         is_late INTEGER DEFAULT 0,
         late_minutes INTEGER DEFAULT 0,
-        scheduled_out_time TIMESTAMPTZ,
+        scheduled_out_time TIMESTAMP,
         FOREIGN KEY(user_id) REFERENCES users(id)
       );
 
       -- Ensure column type is correct if table already exists
       DO $$ 
       BEGIN 
-        ALTER TABLE attendance ALTER COLUMN timestamp TYPE TIMESTAMPTZ;
-        ALTER TABLE attendance ALTER COLUMN scheduled_out_time TYPE TIMESTAMPTZ;
+        ALTER TABLE attendance ALTER COLUMN timestamp TYPE TIMESTAMP;
+        ALTER TABLE attendance ALTER COLUMN scheduled_out_time TYPE TIMESTAMP;
       EXCEPTION 
         WHEN undefined_column THEN 
-          -- Column doesn't exist yet, will be created by CREATE TABLE
           NULL;
       END $$;
       CREATE INDEX IF NOT EXISTS idx_attendance_timestamp ON attendance (timestamp);
