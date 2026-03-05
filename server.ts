@@ -58,21 +58,21 @@ const initDb = async () => {
         id SERIAL PRIMARY KEY,
         user_id INTEGER NOT NULL,
         type TEXT NOT NULL,
-        timestamp TIMESTAMP DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Jakarta'),
+        timestamp TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
         photo TEXT,
         latitude DOUBLE PRECISION,
         longitude DOUBLE PRECISION,
         is_late INTEGER DEFAULT 0,
         late_minutes INTEGER DEFAULT 0,
-        scheduled_out_time TIMESTAMP,
+        scheduled_out_time TIMESTAMPTZ,
         FOREIGN KEY(user_id) REFERENCES users(id)
       );
 
       -- Ensure column type is correct if table already exists
       DO $$ 
       BEGIN 
-        ALTER TABLE attendance ALTER COLUMN timestamp TYPE TIMESTAMP;
-        ALTER TABLE attendance ALTER COLUMN scheduled_out_time TYPE TIMESTAMP;
+        ALTER TABLE attendance ALTER COLUMN timestamp TYPE TIMESTAMPTZ;
+        ALTER TABLE attendance ALTER COLUMN scheduled_out_time TYPE TIMESTAMPTZ;
       EXCEPTION 
         WHEN undefined_column THEN 
           NULL;
@@ -201,13 +201,13 @@ app.get("/api/attendance/today", async (req, res) => {
 
 app.post("/api/attendance", async (req, res) => {
   try {
-    const { userId, type, photo, latitude, longitude, isLate, lateMinutes, scheduledOutTime } = req.body;
+    const { userId, type, photo, latitude, longitude, isLate, lateMinutes, scheduledOutTime, timestamp } = req.body;
     
     const result = await pool.query(`
       INSERT INTO attendance (user_id, type, photo, latitude, longitude, is_late, late_minutes, scheduled_out_time, timestamp)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Jakarta'))
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, COALESCE($9, CURRENT_TIMESTAMP))
       RETURNING id
-    `, [userId, type, photo, latitude, longitude, isLate ? 1 : 0, lateMinutes, scheduledOutTime]);
+    `, [userId, type, photo, latitude, longitude, isLate ? 1 : 0, lateMinutes, scheduledOutTime, timestamp]);
     
     res.json({ id: result.rows[0].id, status: "success" });
   } catch (err) {
