@@ -46,9 +46,12 @@ const initDb = async () => {
         FOREIGN KEY(user_id) REFERENCES users(id)
       );
     `);
+    console.log("Tables created or already exist.");
 
-    const userCount = await client.query("SELECT COUNT(*) as count FROM users");
-    if (parseInt(userCount.rows[0].count) === 0) {
+    const userCountResult = await client.query("SELECT COUNT(*) as count FROM users");
+    const count = parseInt(userCountResult.rows[0].count);
+    if (count === 0) {
+      console.log("Initializing users table with default data...");
       const users = [
         ['adminkpukerinci','adminadminan','admin','Admin'],
         ['antonpudyk@kpukerinci','sekretaris','sekretaris','Anton Pudy K'],
@@ -84,9 +87,11 @@ const initDb = async () => {
       for (const u of users) {
         await client.query("INSERT INTO users (username, password, role, display_name) VALUES ($1, $2, $3, $4)", u);
       }
+      console.log("Users table initialized successfully.");
     }
   } catch (err) {
     console.error("Database initialization error:", err);
+    throw err;
   } finally {
     client.release();
   }
@@ -95,21 +100,40 @@ const initDb = async () => {
 const app = express();
 app.use(express.json({ limit: '10mb' }));
 
+// Health check
+app.get("/api/health", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT NOW()");
+    res.json({ status: "ok", time: result.rows[0].now, env: process.env.NODE_ENV });
+  } catch (err: any) {
+    res.status(500).json({ status: "error", message: err.message });
+  }
+});
+
 // Auth
 app.post("/api/login", async (req, res) => {
   try {
     const { username, password } = req.body;
+    if (!username || !password) {
+      return res.status(400).json({ error: "Username and password are required" });
+    }
+
+    // Ensure DB is initialized (for serverless cold starts)
+    // In a real app, you might want a more sophisticated migration strategy
+    await initDb();
+
     const result = await pool.query("SELECT * FROM users WHERE username = $1 AND password = $2", [username, password]);
     const user = result.rows[0];
+    
     if (user) {
-      if (!user.is_active) return res.status(403).json({ error: "Akun sedang dinonaktifkan (Cuti)" });
+      if (user.is_active === 0) return res.status(403).json({ error: "Akun sedang dinonaktifkan (Cuti)" });
       res.json(user);
     } else {
       res.status(401).json({ error: "Username atau password salah" });
     }
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Internal Server Error" });
+  } catch (err: any) {
+    console.error("Login error:", err);
+    res.status(500).json({ error: "Database error: " + err.message });
   }
 });
 
@@ -287,10 +311,10 @@ if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
       app.listen(3000, "0.0.0.0", () => {
         console.log(`Server running on http://localhost:3000`);
       });
-    });
+    }).catch(err => console.error("Failed to init DB:", err));
   });
 } else {
-  initDb();
+  initDb().catch(err => console.error("Vercel DB Init Error:", err));
   setupServer();
 }
 
