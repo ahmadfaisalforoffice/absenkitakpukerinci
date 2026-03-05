@@ -385,7 +385,7 @@ export default function App() {
       const effectiveStartTime = isAfter(now, startTime) ? now : startTime;
       const finalOutTime = addMinutes(effectiveStartTime, shiftDuration);
       
-      scheduledOutTime = finalOutTime.toISOString();
+      scheduledOutTime = format(finalOutTime, 'yyyy-MM-dd HH:mm:ss');
       isLate = isAfter(now, lateLimitTime);
       if (isLate) {
         lateMinutes = differenceInMinutes(now, lateLimitTime);
