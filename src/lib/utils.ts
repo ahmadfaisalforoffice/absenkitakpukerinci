@@ -40,3 +40,10 @@ export function getWorkSchedule(date: Date) {
   };
 }
 
+export function parseDate(dateStr: string | Date | null | undefined): Date {
+  if (!dateStr) return new Date();
+  if (dateStr instanceof Date) return dateStr;
+  // If it's a string from PG TIMESTAMP (without timezone), it might have a space
+  // Replace space with T to make it ISO-compliant for browser parsing as local time
+  return new Date(dateStr.replace(' ', 'T'));
+}
