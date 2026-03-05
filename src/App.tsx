@@ -27,7 +27,7 @@ import {
 } from 'lucide-react';
 import Webcam from 'react-webcam';
 import { format, isAfter, parse, addMinutes, differenceInMinutes, startOfDay, endOfDay } from 'date-fns';
-import { cn, OFFICE_LOCATION, calculateDistance, getWorkSchedule, parseDate } from './lib/utils';
+import { cn, OFFICE_LOCATION, calculateDistance, getWorkSchedule, parseDate, getJakartaDate } from './lib/utils';
 import * as XLSX from 'xlsx';
 
 type UserData = {
@@ -120,7 +120,7 @@ export default function App() {
   const [adminToday, setAdminToday] = useState<AttendanceRecord[]>([]);
   const [adminUsers, setAdminUsers] = useState<UserData[]>([]);
   const [loading, setLoading] = useState(false);
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState(getJakartaDate());
 
   // Filters
   const [historyFilter, setHistoryFilter] = useState({ start: '', end: '' });
@@ -164,7 +164,7 @@ export default function App() {
   };
 
   useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    const timer = setInterval(() => setCurrentTime(getJakartaDate()), 1000);
     if (user) {
       if (user.role === 'admin') {
         setActiveTab('admin-dash');
@@ -333,7 +333,7 @@ export default function App() {
     XLSX.utils.book_append_sheet(workbook, worksheet, "Laporan Absensi");
     
     // Generate buffer and download
-    XLSX.writeFile(workbook, `Laporan_Absensi_KPU_Kerinci_${format(new Date(), 'yyyyMMdd')}.xlsx`);
+    XLSX.writeFile(workbook, `Laporan_Absensi_KPU_Kerinci_${format(getJakartaDate(), 'yyyyMMdd')}.xlsx`);
   };
 
   const handleAttendance = async () => {
@@ -355,12 +355,12 @@ export default function App() {
     }
 
     setLoading(true);
-    const schedule = getWorkSchedule(new Date());
+    const schedule = getWorkSchedule(getJakartaDate());
     const type = todayRecords.some(r => r.type === 'in') ? 'out' : 'in';
     
     // Logic: Earliest check-in 06:00
     if (type === 'in') {
-      const now = new Date();
+      const now = getJakartaDate();
       const earliest = parse('06:00', 'HH:mm', now);
       if (now < earliest) {
         alert("Absen masuk baru tersedia mulai pukul 06:00 WIB.");
@@ -375,7 +375,7 @@ export default function App() {
     let alertMessage = "";
 
     if (type === 'in' && schedule) {
-      const now = new Date();
+      const now = getJakartaDate();
       const startTime = parse(schedule.start, 'HH:mm', now);
       const lateLimitTime = parse(schedule.lateLimit, 'HH:mm', now);
       const baseOutTime = parse(schedule.end, 'HH:mm', now);
@@ -1047,4 +1047,3 @@ export default function App() {
     </div>
   );
 }
-
