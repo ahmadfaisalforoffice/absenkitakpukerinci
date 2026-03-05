@@ -78,13 +78,15 @@ const initDb = async () => {
           NULL;
       END $$;
 
-      -- One-time fix for records today that were stored in UTC (7 hours behind)
+      -- Corrective fix: The previous migration accidentally shifted 'Clock In' records that were already correct.
+      -- We shift them back if they are 'in' type and were moved to the afternoon (14:xx).
       UPDATE attendance 
-      SET timestamp = timestamp + interval '7 hours',
-          scheduled_out_time = scheduled_out_time + interval '7 hours'
-      WHERE timestamp < (CURRENT_TIMESTAMP - interval '10 minutes')
-      AND EXTRACT(HOUR FROM (timestamp AT TIME ZONE 'Asia/Jakarta')) < 12
-      AND timestamp::date = (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Jakarta')::date;
+      SET timestamp = timestamp - interval '7 hours',
+          scheduled_out_time = scheduled_out_time - interval '7 hours'
+      WHERE type = 'in' 
+      AND timestamp::date = (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Jakarta')::date
+      AND EXTRACT(HOUR FROM (timestamp AT TIME ZONE 'Asia/Jakarta')) >= 14 
+      AND EXTRACT(HOUR FROM (timestamp AT TIME ZONE 'Asia/Jakarta')) < 16;
 
       CREATE INDEX IF NOT EXISTS idx_attendance_timestamp ON attendance (timestamp);
       CREATE INDEX IF NOT EXISTS idx_attendance_user_id ON attendance (user_id);
