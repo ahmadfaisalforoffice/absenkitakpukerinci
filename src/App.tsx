@@ -385,7 +385,7 @@ export default function App() {
       const effectiveStartTime = isAfter(now, startTime) ? now : startTime;
       const finalOutTime = addMinutes(effectiveStartTime, shiftDuration);
       
-      scheduledOutTime = format(finalOutTime, 'yyyy-MM-dd HH:mm:ss');
+      scheduledOutTime = finalOutTime.toISOString();
       isLate = isAfter(now, lateLimitTime);
       if (isLate) {
         lateMinutes = differenceInMinutes(now, lateLimitTime);
@@ -406,7 +406,8 @@ export default function App() {
           longitude: location.lng,
           isLate,
           lateMinutes,
-          scheduledOutTime
+          scheduledOutTime,
+          timestamp: getJakartaDate().toISOString()
         })
       });
       
@@ -1047,4 +1048,3 @@ export default function App() {
     </div>
   );
 }
-
