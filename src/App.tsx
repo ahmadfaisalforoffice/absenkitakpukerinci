@@ -195,9 +195,18 @@ export default function App() {
     try {
       const res = await fetch(`/api/attendance/today?userId=${user.id}`);
       const data = await res.json();
-      setTodayRecords(data);
+      if (Array.isArray(data)) {
+        setTodayRecords(data);
+        setError('');
+      } else {
+        console.error("Expected array for todayRecords, got:", data);
+        setTodayRecords([]);
+        if (data.error) setError(data.error);
+      }
     } catch (err) {
       console.error(err);
+      setTodayRecords([]);
+      setError('Gagal memuat data hari ini');
     }
   };
 
@@ -212,9 +221,14 @@ export default function App() {
       });
       const res = await fetch(`/api/attendance/history?${params}`);
       const data = await res.json();
-      setHistory(data);
+      if (Array.isArray(data)) {
+        setHistory(data);
+      } else {
+        setHistory([]);
+      }
     } catch (err) {
       console.error(err);
+      setHistory([]);
     } finally {
       setLoading(false);
     }
@@ -365,10 +379,10 @@ export default function App() {
         isLate = true;
         lateMinutes = differenceInMinutes(new Date(), startTime);
         const finalOutTime = addMinutes(baseOutTime, lateMinutes);
-        scheduledOutTime = format(finalOutTime, 'yyyy-MM-dd HH:mm:ss');
+        scheduledOutTime = finalOutTime.toISOString();
         alertMessage = `Terlambat ${lateMinutes} menit, Bisa melakukan absen pulang jam ${format(finalOutTime, 'HH:mm')}`;
       } else {
-        scheduledOutTime = format(baseOutTime, 'yyyy-MM-dd HH:mm:ss');
+        scheduledOutTime = baseOutTime.toISOString();
         alertMessage = `Absen Tepat Waktu, bisa melakukan absen pulang jam ${format(baseOutTime, 'HH:mm')}`;
       }
     }
@@ -510,6 +524,17 @@ export default function App() {
       <main className="flex-1 overflow-y-auto p-6 space-y-6 pb-28">
         {activeTab === 'home' && (
           <>
+            {error && (
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                className="bg-red-50 border border-red-100 p-4 rounded-2xl flex items-center gap-3 mb-4"
+              >
+                <AlertCircle className="w-5 h-5 text-red-500" />
+                <p className="text-[10px] font-bold text-red-600 uppercase tracking-wider">{error}</p>
+              </motion.div>
+            )}
+
             <motion.div 
               initial={{ opacity: 0, y: 20 }} 
               animate={{ opacity: 1, y: 0 }} 
