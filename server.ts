@@ -12,10 +12,17 @@ const __dirname = path.dirname(__filename);
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
+  ssl: process.env.DATABASE_URL?.includes('localhost') ? false : {
     rejectUnauthorized: false
   }
 });
+
+// Helper to check pool
+const checkPool = () => {
+  if (!process.env.DATABASE_URL) {
+    throw new Error("DATABASE_URL is not defined in environment variables");
+  }
+};
 
 // Initialize database
 let isDbInitialized = false;
@@ -23,8 +30,7 @@ const initDb = async () => {
   if (isDbInitialized) return;
   
   if (!process.env.DATABASE_URL) {
-    console.error("DATABASE_URL is not defined in environment variables");
-    return;
+    throw new Error("DATABASE_URL is not defined in environment variables. Please set it in Vercel.");
   }
 
   const client = await pool.connect();
@@ -50,9 +56,19 @@ const initDb = async () => {
         longitude DOUBLE PRECISION,
         is_late INTEGER DEFAULT 0,
         late_minutes INTEGER DEFAULT 0,
-        scheduled_out_time TIMESTAMP,
+        scheduled_out_time TIMESTAMPTZ,
         FOREIGN KEY(user_id) REFERENCES users(id)
       );
+
+      -- Ensure column type is correct if table already exists
+      DO $$ 
+      BEGIN 
+        ALTER TABLE attendance ALTER COLUMN scheduled_out_time TYPE TIMESTAMPTZ;
+      EXCEPTION 
+        WHEN undefined_column THEN 
+          -- Column doesn't exist yet, will be created by CREATE TABLE
+          NULL;
+      END $$;
     `);
     console.log("Tables created or already exist.");
 
@@ -114,8 +130,9 @@ app.use(async (req, res, next) => {
   if (req.path.startsWith('/api/')) {
     try {
       await initDb();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Middleware DB Init Error:", err);
+      return res.status(500).json({ error: err.message.includes('ECONNREFUSED') ? "Gagal terhubung ke database. Pastikan DATABASE_URL sudah benar." : err.message });
     }
   }
   next();
@@ -153,7 +170,7 @@ app.post("/api/login", async (req, res) => {
     }
   } catch (err: any) {
     console.error("Login error:", err);
-    res.status(500).json({ error: "Database error: " + err.message });
+    res.status(500).json({ error: err.message.includes('ECONNREFUSED') ? "Gagal terhubung ke database. Pastikan DATABASE_URL sudah benar." : "Database error: " + err.message });
   }
 });
 
