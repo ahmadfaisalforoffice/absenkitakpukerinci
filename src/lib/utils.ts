@@ -39,3 +39,4 @@ export function getWorkSchedule(date: Date) {
     lateLimit: "08:30",
   };
 }
+
