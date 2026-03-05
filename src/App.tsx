@@ -299,14 +299,17 @@ export default function App() {
   };
 
   const exportToExcel = () => {
-    const data = exportDataList.map((r: any) => ({
-      'Nama': r.display_name,
-      'Tanggal': r.date,
-      'Jam': r.time,
-      'Tipe': r.type === 'in' ? 'Clock In' : 'Clock Out',
-      'Terlambat': r.is_late ? 'Ya' : 'Tidak',
-      'Menit Terlambat': r.late_minutes
-    }));
+    const data = exportDataList.map((r: any) => {
+      const dateObj = new Date(r.timestamp);
+      return {
+        'Nama': r.display_name,
+        'Tanggal': format(dateObj, 'dd-MM-yyyy'),
+        'Jam': format(dateObj, 'HH:mm:ss'),
+        'Tipe': r.type === 'in' ? 'Clock In' : 'Clock Out',
+        'Terlambat': r.is_late ? 'Ya' : 'Tidak',
+        'Menit Terlambat': r.late_minutes
+      };
+    });
 
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
@@ -836,7 +839,9 @@ export default function App() {
                           </div>
                           <div>
                             <p className="font-extrabold text-slate-900">{r.display_name}</p>
-                            <p className="text-slate-400 font-medium">{r.date} • {r.time}</p>
+                            <p className="text-slate-400 font-medium">
+                              {format(new Date(r.timestamp), 'dd MMM yyyy')} • {format(new Date(r.timestamp), 'HH:mm')}
+                            </p>
                           </div>
                         </div>
                         <span className={cn(
