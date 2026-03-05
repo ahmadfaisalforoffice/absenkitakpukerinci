@@ -50,7 +50,7 @@ const initDb = async () => {
         id SERIAL PRIMARY KEY,
         user_id INTEGER NOT NULL,
         type TEXT NOT NULL,
-        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        timestamp TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
         photo TEXT,
         latitude DOUBLE PRECISION,
         longitude DOUBLE PRECISION,
@@ -63,6 +63,7 @@ const initDb = async () => {
       -- Ensure column type is correct if table already exists
       DO $$ 
       BEGIN 
+        ALTER TABLE attendance ALTER COLUMN timestamp TYPE TIMESTAMPTZ;
         ALTER TABLE attendance ALTER COLUMN scheduled_out_time TYPE TIMESTAMPTZ;
       EXCEPTION 
         WHEN undefined_column THEN 
@@ -178,8 +179,10 @@ app.post("/api/login", async (req, res) => {
 app.get("/api/attendance/today", async (req, res) => {
   try {
     const userId = req.query.userId;
-    const today = new Date().toISOString().split('T')[0];
-    const result = await pool.query("SELECT * FROM attendance WHERE user_id = $1 AND date(timestamp) = $2", [userId, today]);
+    const result = await pool.query(
+      "SELECT * FROM attendance WHERE user_id = $1 AND date(timestamp AT TIME ZONE 'Asia/Jakarta') = date(CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Jakarta')", 
+      [userId]
+    );
     res.json(result.rows);
   } catch (err) {
     console.error(err);
@@ -212,11 +215,11 @@ app.get("/api/attendance/history", async (req, res) => {
 
     if (startDate) {
       params.push(startDate);
-      query += ` AND date(timestamp) >= $${params.length}`;
+      query += ` AND date(timestamp AT TIME ZONE 'Asia/Jakarta') >= $${params.length}`;
     }
     if (endDate) {
       params.push(endDate);
-      query += ` AND date(timestamp) <= $${params.length}`;
+      query += ` AND date(timestamp AT TIME ZONE 'Asia/Jakarta') <= $${params.length}`;
     }
 
     query += " ORDER BY timestamp DESC LIMIT 100";
@@ -245,14 +248,13 @@ app.post("/api/change-password", async (req, res) => {
 // Admin Routes
 app.get("/api/admin/today-activity", async (req, res) => {
   try {
-    const today = new Date().toISOString().split('T')[0];
     const result = await pool.query(`
       SELECT a.*, u.display_name 
       FROM attendance a 
       JOIN users u ON a.user_id = u.id 
-      WHERE date(a.timestamp) = $1 
+      WHERE date(a.timestamp AT TIME ZONE 'Asia/Jakarta') = date(CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Jakarta')
       ORDER BY a.timestamp DESC
-    `, [today]);
+    `);
     res.json(result.rows);
   } catch (err) {
     console.error(err);
@@ -307,11 +309,11 @@ app.get("/api/admin/export", async (req, res) => {
 
     if (startDate) {
       params.push(startDate);
-      query += ` AND date(a.timestamp) >= $${params.length}`;
+      query += ` AND date(a.timestamp AT TIME ZONE 'Asia/Jakarta') >= $${params.length}`;
     }
     if (endDate) {
       params.push(endDate);
-      query += ` AND date(a.timestamp) <= $${params.length}`;
+      query += ` AND date(a.timestamp AT TIME ZONE 'Asia/Jakarta') <= $${params.length}`;
     }
     if (userId) {
       params.push(userId);
