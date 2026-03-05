@@ -27,7 +27,7 @@ import {
 } from 'lucide-react';
 import Webcam from 'react-webcam';
 import { format, isAfter, parse, addMinutes, differenceInMinutes, startOfDay, endOfDay } from 'date-fns';
-import { cn, OFFICE_LOCATION, calculateDistance, getWorkSchedule } from './lib/utils';
+import { cn, OFFICE_LOCATION, calculateDistance, getWorkSchedule, parseDate } from './lib/utils';
 import * as XLSX from 'xlsx';
 
 type UserData = {
@@ -317,7 +317,7 @@ export default function App() {
 
   const exportToExcel = () => {
     const data = exportDataList.map((r: any) => {
-      const dateObj = new Date(r.timestamp);
+      const dateObj = parseDate(r.timestamp);
       return {
         'Nama': r.display_name,
         'Tanggal': format(dateObj, 'dd-MM-yyyy'),
@@ -565,7 +565,7 @@ export default function App() {
                   </div>
                   <div className="flex-1 bg-white/5 rounded-2xl p-4 border border-white/10 backdrop-blur-md">
                     <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-1">Clock Out Schedule</p>
-                    <p className="text-lg font-bold">{checkIn?.scheduled_out_time ? format(new Date(checkIn.scheduled_out_time), 'HH:mm') : schedule?.end || '--:--'}</p>
+                    <p className="text-lg font-bold">{checkIn?.scheduled_out_time ? format(parseDate(checkIn.scheduled_out_time), 'HH:mm') : schedule?.end || '--:--'}</p>
                   </div>
                 </div>
               </div>
@@ -588,7 +588,7 @@ export default function App() {
                   </div>
                   <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Clock In</span>
                 </div>
-                <p className="text-2xl font-extrabold text-slate-900">{checkIn ? format(new Date(checkIn.timestamp), 'HH:mm') : '--:--'}</p>
+                <p className="text-2xl font-extrabold text-slate-900">{checkIn ? format(parseDate(checkIn.timestamp), 'HH:mm') : '--:--'}</p>
                 {checkIn?.is_late ? (
                   <div className="flex items-center gap-1 mt-2 text-red-500">
                     <AlertCircle className="w-3 h-3" />
@@ -599,7 +599,7 @@ export default function App() {
                 )}
                 {checkIn?.scheduled_out_time && (
                   <div className="mt-2 pt-2 border-t border-emerald-100/50">
-                    <p className="text-[8px] text-brand-600 font-bold uppercase tracking-wider">Bisa pulang jam {format(new Date(checkIn.scheduled_out_time), 'HH:mm')}</p>
+                    <p className="text-[8px] text-brand-600 font-bold uppercase tracking-wider">Bisa pulang jam {format(parseDate(checkIn.scheduled_out_time), 'HH:mm')}</p>
                   </div>
                 )}
               </motion.div>
@@ -617,7 +617,7 @@ export default function App() {
                   </div>
                   <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Clock Out</span>
                 </div>
-                <p className="text-2xl font-extrabold text-slate-900">{checkOut ? format(new Date(checkOut.timestamp), 'HH:mm') : '--:--'}</p>
+                <p className="text-2xl font-extrabold text-slate-900">{checkOut ? format(parseDate(checkOut.timestamp), 'HH:mm') : '--:--'}</p>
                 {checkOut && <p className="text-[9px] text-brand-600 font-bold mt-2 uppercase tracking-wide">Sudah Absen</p>}
               </motion.div>
             </div>
@@ -720,7 +720,7 @@ export default function App() {
                   <div className="flex-1">
                     <div className="flex justify-between items-start mb-1">
                       <p className="font-extrabold text-slate-900 text-sm">{record.type === 'in' ? 'Check In' : 'Check Out'}</p>
-                      <p className="text-[10px] text-slate-400 font-mono font-bold">{format(new Date(record.timestamp), 'dd MMM, HH:mm')}</p>
+                      <p className="text-[10px] text-slate-400 font-mono font-bold">{format(parseDate(record.timestamp), 'dd MMM, HH:mm')}</p>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
                       {record.is_late ? (
@@ -730,7 +730,7 @@ export default function App() {
                       )}
                       {record.type === 'in' && record.scheduled_out_time && (
                         <span className="text-[9px] px-2.5 py-1 bg-brand-50 text-brand-600 rounded-full font-bold uppercase tracking-wide border border-brand-100">
-                          Bisa pulang {format(new Date(record.scheduled_out_time), 'HH:mm')}
+                          Bisa pulang {format(parseDate(record.scheduled_out_time), 'HH:mm')}
                         </span>
                       )}
                     </div>
@@ -766,7 +766,7 @@ export default function App() {
                     <p className="font-extrabold text-slate-900 text-sm">{record.display_name}</p>
                     <div className="flex items-center gap-2">
                       <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                        {record.type === 'in' ? 'Clock In' : 'Clock Out'} • {format(new Date(record.timestamp), 'HH:mm')}
+                        {record.type === 'in' ? 'Clock In' : 'Clock Out'} • {format(parseDate(record.timestamp), 'HH:mm')}
                       </p>
                       {record.is_late === 1 && <span className="text-[8px] px-2 py-0.5 bg-red-50 text-red-500 rounded-full font-bold uppercase tracking-widest border border-red-100">Terlambat</span>}
                     </div>
@@ -877,7 +877,7 @@ export default function App() {
                           <div>
                             <p className="font-extrabold text-slate-900">{r.display_name}</p>
                             <p className="text-slate-400 font-medium">
-                              {format(new Date(r.timestamp), 'dd MMM yyyy')} • {format(new Date(r.timestamp), 'HH:mm')}
+                              {format(parseDate(r.timestamp), 'dd MMM yyyy')} • {format(parseDate(r.timestamp), 'HH:mm')}
                             </p>
                           </div>
                         </div>
