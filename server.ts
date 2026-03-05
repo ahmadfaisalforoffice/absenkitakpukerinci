@@ -92,184 +92,181 @@ const initDb = async () => {
   }
 };
 
-async function createServer() {
-  const app = express();
-  const PORT = 3000;
+const app = express();
+app.use(express.json({ limit: '10mb' }));
 
-  app.use(express.json({ limit: '10mb' }));
-
-  // Auth
-  app.post("/api/login", async (req, res) => {
-    try {
-      const { username, password } = req.body;
-      const result = await pool.query("SELECT * FROM users WHERE username = $1 AND password = $2", [username, password]);
-      const user = result.rows[0];
-      if (user) {
-        if (!user.is_active) return res.status(403).json({ error: "Akun sedang dinonaktifkan (Cuti)" });
-        res.json(user);
-      } else {
-        res.status(401).json({ error: "Username atau password salah" });
-      }
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Internal Server Error" });
+// Auth
+app.post("/api/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const result = await pool.query("SELECT * FROM users WHERE username = $1 AND password = $2", [username, password]);
+    const user = result.rows[0];
+    if (user) {
+      if (!user.is_active) return res.status(403).json({ error: "Akun sedang dinonaktifkan (Cuti)" });
+      res.json(user);
+    } else {
+      res.status(401).json({ error: "Username atau password salah" });
     }
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
-  // Attendance
-  app.get("/api/attendance/today", async (req, res) => {
-    try {
-      const userId = req.query.userId;
-      const today = new Date().toISOString().split('T')[0];
-      const result = await pool.query("SELECT * FROM attendance WHERE user_id = $1 AND date(timestamp) = $2", [userId, today]);
-      res.json(result.rows);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Internal Server Error" });
+// Attendance
+app.get("/api/attendance/today", async (req, res) => {
+  try {
+    const userId = req.query.userId;
+    const today = new Date().toISOString().split('T')[0];
+    const result = await pool.query("SELECT * FROM attendance WHERE user_id = $1 AND date(timestamp) = $2", [userId, today]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.post("/api/attendance", async (req, res) => {
+  try {
+    const { userId, type, photo, latitude, longitude, isLate, lateMinutes, scheduledOutTime } = req.body;
+    
+    const result = await pool.query(`
+      INSERT INTO attendance (user_id, type, photo, latitude, longitude, is_late, late_minutes, scheduled_out_time)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING id
+    `, [userId, type, photo, latitude, longitude, isLate ? 1 : 0, lateMinutes, scheduledOutTime]);
+    
+    res.json({ id: result.rows[0].id, status: "success" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/api/attendance/history", async (req, res) => {
+  try {
+    const { userId, startDate, endDate } = req.query;
+    let query = "SELECT * FROM attendance WHERE user_id = $1";
+    const params: any[] = [userId];
+
+    if (startDate) {
+      params.push(startDate);
+      query += ` AND date(timestamp) >= $${params.length}`;
     }
-  });
-
-  app.post("/api/attendance", async (req, res) => {
-    try {
-      const { userId, type, photo, latitude, longitude, isLate, lateMinutes, scheduledOutTime } = req.body;
-      
-      const result = await pool.query(`
-        INSERT INTO attendance (user_id, type, photo, latitude, longitude, is_late, late_minutes, scheduled_out_time)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-        RETURNING id
-      `, [userId, type, photo, latitude, longitude, isLate ? 1 : 0, lateMinutes, scheduledOutTime]);
-      
-      res.json({ id: result.rows[0].id, status: "success" });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Internal Server Error" });
+    if (endDate) {
+      params.push(endDate);
+      query += ` AND date(timestamp) <= $${params.length}`;
     }
-  });
 
-  app.get("/api/attendance/history", async (req, res) => {
-    try {
-      const { userId, startDate, endDate } = req.query;
-      let query = "SELECT * FROM attendance WHERE user_id = $1";
-      const params: any[] = [userId];
+    query += " ORDER BY timestamp DESC LIMIT 100";
+    const result = await pool.query(query, params);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
-      if (startDate) {
-        params.push(startDate);
-        query += ` AND date(timestamp) >= $${params.length}`;
-      }
-      if (endDate) {
-        params.push(endDate);
-        query += ` AND date(timestamp) <= $${params.length}`;
-      }
+app.post("/api/change-password", async (req, res) => {
+  try {
+    const { userId, oldPassword, newPassword } = req.body;
+    const result = await pool.query("SELECT * FROM users WHERE id = $1 AND password = $2", [userId, oldPassword]);
+    if (result.rows.length === 0) return res.status(401).json({ error: "Password lama salah" });
 
-      query += " ORDER BY timestamp DESC LIMIT 100";
-      const result = await pool.query(query, params);
-      res.json(result.rows);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Internal Server Error" });
+    await pool.query("UPDATE users SET password = $1 WHERE id = $2", [newPassword, userId]);
+    res.json({ status: "success" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Admin Routes
+app.get("/api/admin/today-activity", async (req, res) => {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const result = await pool.query(`
+      SELECT a.*, u.display_name 
+      FROM attendance a 
+      JOIN users u ON a.user_id = u.id 
+      WHERE date(a.timestamp) = $1 
+      ORDER BY a.timestamp DESC
+    `, [today]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/api/admin/users", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT id, username, role, display_name, is_active FROM users WHERE role != 'admin'");
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.patch("/api/admin/users/:id/status", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { is_active } = req.body;
+    await pool.query("UPDATE users SET is_active = $1 WHERE id = $2", [is_active ? 1 : 0, id]);
+    res.json({ status: "success" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.post("/api/admin/users/:id/reset-password", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { newPassword } = req.body;
+    await pool.query("UPDATE users SET password = $1 WHERE id = $2", [newPassword, id]);
+    res.json({ status: "success" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/api/admin/export", async (req, res) => {
+  try {
+    const { startDate, endDate, userId } = req.query;
+    let query = `
+      SELECT u.display_name, date(a.timestamp) as date, to_char(a.timestamp, 'HH24:MI:SS') as time, a.type, a.is_late, a.late_minutes
+      FROM attendance a
+      JOIN users u ON a.user_id = u.id
+      WHERE 1=1
+    `;
+    const params: any[] = [];
+
+    if (startDate) {
+      params.push(startDate);
+      query += ` AND date(a.timestamp) >= $${params.length}`;
     }
-  });
-
-  app.post("/api/change-password", async (req, res) => {
-    try {
-      const { userId, oldPassword, newPassword } = req.body;
-      const result = await pool.query("SELECT * FROM users WHERE id = $1 AND password = $2", [userId, oldPassword]);
-      if (result.rows.length === 0) return res.status(401).json({ error: "Password lama salah" });
-
-      await pool.query("UPDATE users SET password = $1 WHERE id = $2", [newPassword, userId]);
-      res.json({ status: "success" });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Internal Server Error" });
+    if (endDate) {
+      params.push(endDate);
+      query += ` AND date(a.timestamp) <= $${params.length}`;
     }
-  });
-
-  // Admin Routes
-  app.get("/api/admin/today-activity", async (req, res) => {
-    try {
-      const today = new Date().toISOString().split('T')[0];
-      const result = await pool.query(`
-        SELECT a.*, u.display_name 
-        FROM attendance a 
-        JOIN users u ON a.user_id = u.id 
-        WHERE date(a.timestamp) = $1 
-        ORDER BY a.timestamp DESC
-      `, [today]);
-      res.json(result.rows);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Internal Server Error" });
+    if (userId) {
+      params.push(userId);
+      query += ` AND a.user_id = $${params.length}`;
     }
-  });
 
-  app.get("/api/admin/users", async (req, res) => {
-    try {
-      const result = await pool.query("SELECT id, username, role, display_name, is_active FROM users WHERE role != 'admin'");
-      res.json(result.rows);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  });
+    query += " ORDER BY u.display_name, a.timestamp";
+    const result = await pool.query(query, params);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
-  app.patch("/api/admin/users/:id/status", async (req, res) => {
-    try {
-      const { id } = req.params;
-      const { is_active } = req.body;
-      await pool.query("UPDATE users SET is_active = $1 WHERE id = $2", [is_active ? 1 : 0, id]);
-      res.json({ status: "success" });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  });
-
-  app.post("/api/admin/users/:id/reset-password", async (req, res) => {
-    try {
-      const { id } = req.params;
-      const { newPassword } = req.body;
-      await pool.query("UPDATE users SET password = $1 WHERE id = $2", [newPassword, id]);
-      res.json({ status: "success" });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  });
-
-  app.get("/api/admin/export", async (req, res) => {
-    try {
-      const { startDate, endDate, userId } = req.query;
-      let query = `
-        SELECT u.display_name, date(a.timestamp) as date, to_char(a.timestamp, 'HH24:MI:SS') as time, a.type, a.is_late, a.late_minutes
-        FROM attendance a
-        JOIN users u ON a.user_id = u.id
-        WHERE 1=1
-      `;
-      const params: any[] = [];
-
-      if (startDate) {
-        params.push(startDate);
-        query += ` AND date(a.timestamp) >= $${params.length}`;
-      }
-      if (endDate) {
-        params.push(endDate);
-        query += ` AND date(a.timestamp) <= $${params.length}`;
-      }
-      if (userId) {
-        params.push(userId);
-        query += ` AND a.user_id = $${params.length}`;
-      }
-
-      query += " ORDER BY u.display_name, a.timestamp";
-      const result = await pool.query(query, params);
-      res.json(result.rows);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  });
-
-  // Vite middleware for development
+async function setupServer() {
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },
@@ -282,19 +279,19 @@ async function createServer() {
       res.sendFile(path.join(__dirname, "dist", "index.html"));
     });
   }
-
-  return app;
 }
 
-// Start server if not in Vercel
 if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
-  createServer().then(app => {
+  setupServer().then(() => {
     initDb().then(() => {
       app.listen(3000, "0.0.0.0", () => {
         console.log(`Server running on http://localhost:3000`);
       });
     });
   });
+} else {
+  initDb();
+  setupServer();
 }
 
-export default createServer;
+export default app;
