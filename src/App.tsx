@@ -372,16 +372,18 @@ export default function App() {
     let alertMessage = "";
 
     if (type === 'in' && schedule) {
-      const startTime = parse(schedule.start, 'HH:mm', new Date());
+      const lateLimitTime = parse(schedule.lateLimit, 'HH:mm', new Date());
       const baseOutTime = parse(schedule.end, 'HH:mm', new Date());
       
-      if (isAfter(new Date(), startTime)) {
+      if (isAfter(new Date(), lateLimitTime)) {
         isLate = true;
-        lateMinutes = differenceInMinutes(new Date(), startTime);
+        lateMinutes = differenceInMinutes(new Date(), lateLimitTime);
         const finalOutTime = addMinutes(baseOutTime, lateMinutes);
         scheduledOutTime = finalOutTime.toISOString();
         alertMessage = `Terlambat ${lateMinutes} menit, Bisa melakukan absen pulang jam ${format(finalOutTime, 'HH:mm')}`;
       } else {
+        isLate = false;
+        lateMinutes = 0;
         scheduledOutTime = baseOutTime.toISOString();
         alertMessage = `Absen Tepat Waktu, bisa melakukan absen pulang jam ${format(baseOutTime, 'HH:mm')}`;
       }
