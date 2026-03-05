@@ -78,9 +78,8 @@ const initDb = async () => {
           NULL;
       END $$;
 
-      -- Set default timezone for the database session to Asia/Jakarta
-      -- This ensures that NeonDB and all queries show WIB time by default
-      ALTER DATABASE CURRENT SET timezone TO 'Asia/Jakarta';
+      -- Set timezone for the current session to Asia/Jakarta
+      -- This ensures that all queries in this session return WIB time
       SET TIME ZONE 'Asia/Jakarta';
 
       CREATE INDEX IF NOT EXISTS idx_attendance_timestamp ON attendance (timestamp);
