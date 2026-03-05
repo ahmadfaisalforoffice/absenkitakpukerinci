@@ -77,6 +77,15 @@ const initDb = async () => {
         WHEN undefined_column THEN 
           NULL;
       END $$;
+
+      -- One-time fix for records today that were stored in UTC (7 hours behind)
+      UPDATE attendance 
+      SET timestamp = timestamp + interval '7 hours',
+          scheduled_out_time = scheduled_out_time + interval '7 hours'
+      WHERE timestamp < (CURRENT_TIMESTAMP - interval '10 minutes')
+      AND EXTRACT(HOUR FROM (timestamp AT TIME ZONE 'Asia/Jakarta')) < 12
+      AND timestamp::date = (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Jakarta')::date;
+
       CREATE INDEX IF NOT EXISTS idx_attendance_timestamp ON attendance (timestamp);
       CREATE INDEX IF NOT EXISTS idx_attendance_user_id ON attendance (user_id);
     `);
