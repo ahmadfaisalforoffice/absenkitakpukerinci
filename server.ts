@@ -20,6 +20,11 @@ const pool = new Pool({
   }
 });
 
+// Set session timezone for all connections in the pool
+pool.on('connect', (client) => {
+  client.query("SET TIMEZONE='Asia/Jakarta'");
+});
+
 // Helper to check pool
 const checkPool = () => {
   if (!process.env.DATABASE_URL) {
@@ -199,8 +204,8 @@ app.post("/api/attendance", async (req, res) => {
     const { userId, type, photo, latitude, longitude, isLate, lateMinutes, scheduledOutTime } = req.body;
     
     const result = await pool.query(`
-      INSERT INTO attendance (user_id, type, photo, latitude, longitude, is_late, late_minutes, scheduled_out_time)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      INSERT INTO attendance (user_id, type, photo, latitude, longitude, is_late, late_minutes, scheduled_out_time, timestamp)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP)
       RETURNING id
     `, [userId, type, photo, latitude, longitude, isLate ? 1 : 0, lateMinutes, scheduledOutTime]);
     
