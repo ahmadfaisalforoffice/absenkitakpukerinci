@@ -78,10 +78,9 @@ const initDb = async () => {
           NULL;
       END $$;
 
-      -- Set timezone for the current session to Asia/Jakarta
-      -- This ensures that all queries in this session return WIB time
-      SET TIME ZONE 'Asia/Jakarta';
-
+      -- We remove the SET TIME ZONE 'Asia/Jakarta' to allow the app 
+      -- to read the 'forced' local time values directly from the database.
+      
       CREATE INDEX IF NOT EXISTS idx_attendance_timestamp ON attendance (timestamp);
       CREATE INDEX IF NOT EXISTS idx_attendance_user_id ON attendance (user_id);
     `);
