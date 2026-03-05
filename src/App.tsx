@@ -447,9 +447,9 @@ export default function App() {
             <motion.div 
               initial={{ scale: 0.5, rotate: -10 }}
               animate={{ scale: 1, rotate: 0 }}
-              className="w-20 h-20 bg-gradient-to-br from-brand-500 to-brand-700 rounded-[2rem] flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-brand-500/40"
+              className="w-24 h-24 bg-white rounded-[2.5rem] flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-brand-500/20 p-2"
             >
-              <Lock className="w-10 h-10 text-white" />
+              <img src="/logo.png" alt="Logo AbsenKita" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
             </motion.div>
             <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 mb-1">Absen<span className="text-brand-600">Kita</span></h1>
             <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">KPU Kabupaten Kerinci</p>
@@ -508,9 +508,14 @@ export default function App() {
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col max-w-md mx-auto shadow-2xl relative overflow-hidden">
       {/* Header */}
       <header className="p-6 glass sticky top-0 z-30 flex justify-between items-center border-b-0 rounded-b-[2rem]">
-        <div>
-          <h1 className="text-xl font-extrabold tracking-tight text-slate-900">Absen<span className="text-brand-600">Kita</span></h1>
-          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.15em]">{user.display_name}</p>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center p-1 shadow-sm border border-slate-100">
+            <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
+          </div>
+          <div>
+            <h1 className="text-lg font-extrabold tracking-tight text-slate-900 leading-tight">Absen<span className="text-brand-600">Kita</span></h1>
+            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.15em]">{user.display_name}</p>
+          </div>
         </div>
         <div className="flex items-center gap-3">
           <button 
