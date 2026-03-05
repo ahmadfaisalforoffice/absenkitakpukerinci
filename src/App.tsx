@@ -375,26 +375,23 @@ export default function App() {
     let alertMessage = "";
 
     if (type === 'in' && schedule) {
-      const startTime = parse(schedule.start, 'HH:mm', new Date());
-      const lateLimitTime = parse(schedule.lateLimit, 'HH:mm', new Date());
-      const baseOutTime = parse(schedule.end, 'HH:mm', new Date());
-      const standardDuration = differenceInMinutes(baseOutTime, startTime);
+      const now = new Date();
+      const startTime = parse(schedule.start, 'HH:mm', now);
+      const lateLimitTime = parse(schedule.lateLimit, 'HH:mm', now);
+      const baseOutTime = parse(schedule.end, 'HH:mm', now);
+      const shiftDuration = differenceInMinutes(baseOutTime, startTime);
       
-      if (isAfter(new Date(), lateLimitTime)) {
-        isLate = true;
-        lateMinutes = differenceInMinutes(new Date(), lateLimitTime);
-        
-        // Calculate final out time to match the standard duration (e.g., 510 minutes)
-        const finalOutTime = addMinutes(new Date(), standardDuration);
-        scheduledOutTime = finalOutTime.toISOString();
-        
-        alertMessage = `Terlambat ${lateMinutes} menit. Untuk memenuhi durasi kerja standar ${standardDuration} menit, Anda bisa absen pulang jam ${format(finalOutTime, 'HH:mm')} WIB.`;
-      } else {
-        isLate = false;
-        lateMinutes = 0;
-        scheduledOutTime = baseOutTime.toISOString();
-        alertMessage = `Absen Tepat Waktu, bisa melakukan absen pulang jam ${format(baseOutTime, 'HH:mm')} WIB.`;
+      // If check-in is before start time, count from start time. Otherwise count from now.
+      const effectiveStartTime = isAfter(now, startTime) ? now : startTime;
+      const finalOutTime = addMinutes(effectiveStartTime, shiftDuration);
+      
+      scheduledOutTime = finalOutTime.toISOString();
+      isLate = isAfter(now, lateLimitTime);
+      if (isLate) {
+        lateMinutes = differenceInMinutes(now, lateLimitTime);
       }
+
+      alertMessage = `Absen Masuk Berhasil. Anda bisa absen pulang jam ${format(finalOutTime, 'HH:mm')} WIB.`;
     }
 
     try {
