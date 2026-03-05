@@ -281,7 +281,7 @@ app.get("/api/admin/export", async (req, res) => {
   try {
     const { startDate, endDate, userId } = req.query;
     let query = `
-      SELECT u.display_name, date(a.timestamp) as date, to_char(a.timestamp, 'HH24:MI:SS') as time, a.type, a.is_late, a.late_minutes
+      SELECT u.display_name, a.timestamp, a.type, a.is_late, a.late_minutes
       FROM attendance a
       JOIN users u ON a.user_id = u.id
       WHERE 1=1
