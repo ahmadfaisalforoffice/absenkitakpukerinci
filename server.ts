@@ -70,6 +70,8 @@ const initDb = async () => {
           -- Column doesn't exist yet, will be created by CREATE TABLE
           NULL;
       END $$;
+      CREATE INDEX IF NOT EXISTS idx_attendance_timestamp ON attendance (timestamp);
+      CREATE INDEX IF NOT EXISTS idx_attendance_user_id ON attendance (user_id);
     `);
     console.log("Tables created or already exist.");
 
@@ -109,9 +111,9 @@ const initDb = async () => {
         ['jeminopanra@kpukerinci','jemikul','staff','Jemi Nopanra']
       ];
 
-      for (const u of users) {
-        await client.query("INSERT INTO users (username, password, role, display_name) VALUES ($1, $2, $3, $4)", u);
-      }
+      const values = users.map((_, i) => `($${i * 4 + 1}, $${i * 4 + 2}, $${i * 4 + 3}, $${i * 4 + 4})`).join(',');
+      const flatUsers = users.flat();
+      await client.query(`INSERT INTO users (username, password, role, display_name) VALUES ${values}`, flatUsers);
       console.log("Users table initialized successfully.");
     }
     isDbInitialized = true;
@@ -180,7 +182,7 @@ app.get("/api/attendance/today", async (req, res) => {
   try {
     const userId = req.query.userId;
     const result = await pool.query(
-      "SELECT * FROM attendance WHERE user_id = $1 AND date(timestamp AT TIME ZONE 'Asia/Jakarta') = date(CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Jakarta')", 
+      "SELECT * FROM attendance WHERE user_id = $1 AND timestamp >= (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Jakarta')::date AND timestamp < ((CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Jakarta')::date + interval '1 day')", 
       [userId]
     );
     res.json(result.rows);
@@ -249,10 +251,11 @@ app.post("/api/change-password", async (req, res) => {
 app.get("/api/admin/today-activity", async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT a.*, u.display_name 
+      SELECT a.id, a.user_id, a.type, a.timestamp, a.latitude, a.longitude, a.is_late, a.late_minutes, a.scheduled_out_time, u.display_name 
       FROM attendance a 
       JOIN users u ON a.user_id = u.id 
-      WHERE date(a.timestamp AT TIME ZONE 'Asia/Jakarta') = date(CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Jakarta')
+      WHERE a.timestamp >= (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Jakarta')::date 
+        AND a.timestamp < ((CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Jakarta')::date + interval '1 day')
       ORDER BY a.timestamp DESC
     `);
     res.json(result.rows);
