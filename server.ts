@@ -1,5 +1,4 @@
 import express from "express";
-import { createServer as createViteServer } from "vite";
 import pkg from 'pg';
 const { Pool } = pkg;
 import path from "path";
@@ -19,9 +18,18 @@ const pool = new Pool({
 });
 
 // Initialize database
+let isDbInitialized = false;
 const initDb = async () => {
+  if (isDbInitialized) return;
+  
+  if (!process.env.DATABASE_URL) {
+    console.error("DATABASE_URL is not defined in environment variables");
+    return;
+  }
+
   const client = await pool.connect();
   try {
+    console.log("Checking database tables...");
     await client.query(`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
@@ -89,6 +97,7 @@ const initDb = async () => {
       }
       console.log("Users table initialized successfully.");
     }
+    isDbInitialized = true;
   } catch (err) {
     console.error("Database initialization error:", err);
     throw err;
@@ -100,9 +109,24 @@ const initDb = async () => {
 const app = express();
 app.use(express.json({ limit: '10mb' }));
 
+// Middleware to ensure DB is initialized
+app.use(async (req, res, next) => {
+  if (req.path.startsWith('/api/')) {
+    try {
+      await initDb();
+    } catch (err) {
+      console.error("Middleware DB Init Error:", err);
+    }
+  }
+  next();
+});
+
 // Health check
 app.get("/api/health", async (req, res) => {
   try {
+    if (!process.env.DATABASE_URL) {
+      return res.status(500).json({ status: "error", message: "DATABASE_URL is missing" });
+    }
     const result = await pool.query("SELECT NOW()");
     res.json({ status: "ok", time: result.rows[0].now, env: process.env.NODE_ENV });
   } catch (err: any) {
@@ -117,10 +141,6 @@ app.post("/api/login", async (req, res) => {
     if (!username || !password) {
       return res.status(400).json({ error: "Username and password are required" });
     }
-
-    // Ensure DB is initialized (for serverless cold starts)
-    // In a real app, you might want a more sophisticated migration strategy
-    await initDb();
 
     const result = await pool.query("SELECT * FROM users WHERE username = $1 AND password = $2", [username, password]);
     const user = result.rows[0];
@@ -292,12 +312,15 @@ app.get("/api/admin/export", async (req, res) => {
 
 async function setupServer() {
   if (process.env.NODE_ENV !== "production") {
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
     });
     app.use(vite.middlewares);
-  } else {
+  } else if (!process.env.VERCEL) {
+    // Only serve static files via Express if NOT on Vercel
+    // Vercel handles static files automatically via vercel.json
     app.use(express.static(path.join(__dirname, "dist")));
     app.get("*", (req, res) => {
       res.sendFile(path.join(__dirname, "dist", "index.html"));
@@ -314,7 +337,7 @@ if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
     }).catch(err => console.error("Failed to init DB:", err));
   });
 } else {
-  initDb().catch(err => console.error("Vercel DB Init Error:", err));
+  // In Vercel, we rely on the middleware for DB initialization
   setupServer();
 }
 
