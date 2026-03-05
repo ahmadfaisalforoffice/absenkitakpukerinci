@@ -375,20 +375,25 @@ export default function App() {
     let alertMessage = "";
 
     if (type === 'in' && schedule) {
+      const startTime = parse(schedule.start, 'HH:mm', new Date());
       const lateLimitTime = parse(schedule.lateLimit, 'HH:mm', new Date());
       const baseOutTime = parse(schedule.end, 'HH:mm', new Date());
+      const standardDuration = differenceInMinutes(baseOutTime, startTime);
       
       if (isAfter(new Date(), lateLimitTime)) {
         isLate = true;
         lateMinutes = differenceInMinutes(new Date(), lateLimitTime);
-        const finalOutTime = addMinutes(baseOutTime, lateMinutes);
+        
+        // Calculate final out time to match the standard duration (e.g., 510 minutes)
+        const finalOutTime = addMinutes(new Date(), standardDuration);
         scheduledOutTime = finalOutTime.toISOString();
-        alertMessage = `Terlambat ${lateMinutes} menit, Bisa melakukan absen pulang jam ${format(finalOutTime, 'HH:mm')}`;
+        
+        alertMessage = `Terlambat ${lateMinutes} menit. Untuk memenuhi durasi kerja standar ${standardDuration} menit, Anda bisa absen pulang jam ${format(finalOutTime, 'HH:mm')} WIB.`;
       } else {
         isLate = false;
         lateMinutes = 0;
         scheduledOutTime = baseOutTime.toISOString();
-        alertMessage = `Absen Tepat Waktu, bisa melakukan absen pulang jam ${format(baseOutTime, 'HH:mm')}`;
+        alertMessage = `Absen Tepat Waktu, bisa melakukan absen pulang jam ${format(baseOutTime, 'HH:mm')} WIB.`;
       }
     }
 
