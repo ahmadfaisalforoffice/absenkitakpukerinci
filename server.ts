@@ -1,6 +1,9 @@
 import express from "express";
 import pkg from 'pg';
-const { Pool } = pkg;
+const { Pool, types } = pkg;
+
+// Force TIMESTAMP (1114) to be returned as string to avoid timezone shifting
+types.setTypeParser(1114, (val) => val);
 import path from "path";
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
