@@ -78,15 +78,10 @@ const initDb = async () => {
           NULL;
       END $$;
 
-      -- Corrective fix: The previous migration accidentally shifted 'Clock In' records that were already correct.
-      -- We shift them back if they are 'in' type and were moved to the afternoon (14:xx).
-      UPDATE attendance 
-      SET timestamp = timestamp - interval '7 hours',
-          scheduled_out_time = scheduled_out_time - interval '7 hours'
-      WHERE type = 'in' 
-      AND timestamp::date = (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Jakarta')::date
-      AND EXTRACT(HOUR FROM (timestamp AT TIME ZONE 'Asia/Jakarta')) >= 14 
-      AND EXTRACT(HOUR FROM (timestamp AT TIME ZONE 'Asia/Jakarta')) < 16;
+      -- Set default timezone for the database session to Asia/Jakarta
+      -- This ensures that NeonDB and all queries show WIB time by default
+      ALTER DATABASE CURRENT SET timezone TO 'Asia/Jakarta';
+      SET TIME ZONE 'Asia/Jakarta';
 
       CREATE INDEX IF NOT EXISTS idx_attendance_timestamp ON attendance (timestamp);
       CREATE INDEX IF NOT EXISTS idx_attendance_user_id ON attendance (user_id);
