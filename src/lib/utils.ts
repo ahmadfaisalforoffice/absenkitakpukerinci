@@ -47,3 +47,10 @@ export function parseDate(dateStr: string | Date | null | undefined): Date {
   // Replace space with T to make it ISO-compliant for browser parsing as local time
   return new Date(dateStr.replace(' ', 'T'));
 }
+
+export function getJakartaDate(): Date {
+  // Create a date object for the current time in Jakarta
+  const now = new Date();
+  const jakartaTime = now.toLocaleString("en-US", { timeZone: "Asia/Jakarta" });
+  return new Date(jakartaTime);
+}
