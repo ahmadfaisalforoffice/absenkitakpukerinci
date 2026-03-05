@@ -178,6 +178,7 @@ export default function App() {
   }, [user]);
 
   const fetchAdminData = async () => {
+    setLoading(true);
     try {
       const [todayRes, usersRes] = await Promise.all([
         fetch('/api/admin/today-activity'),
@@ -187,6 +188,8 @@ export default function App() {
       setAdminUsers(await usersRes.json());
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -985,7 +988,7 @@ export default function App() {
                 videoConstraints={{ facingMode: "user" }} 
                 className="w-full h-full object-cover" 
                 mirrored={true} 
-                screenshotQuality={1} 
+                screenshotQuality={0.7} 
                 disablePictureInPicture={true}
                 forceScreenshotSourceSize={false}
                 imageSmoothing={true}
