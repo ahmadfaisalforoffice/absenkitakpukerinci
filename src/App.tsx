@@ -1038,31 +1038,36 @@ export default function App() {
                 <p className="text-slate-400 text-xs font-medium">Pastikan pencahayaan cukup dan wajah terlihat jelas</p>
               </div>
 
-              {getJakartaDate().getDay() === 5 && (
-                <div className="w-full max-w-[200px] space-y-2">
-                  <label className="block text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 text-center">Mode Kerja (Jumat)</label>
-                  <div className="flex bg-slate-800 p-1 rounded-2xl border border-slate-700">
-                    <button 
-                      onClick={() => setWorkMode('WFO')}
-                      className={cn(
-                        "flex-1 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all",
-                        workMode === 'WFO' ? "bg-brand-500 text-white shadow-lg shadow-brand-500/30" : "text-slate-400 hover:text-white"
-                      )}
-                    >
-                      WFO
-                    </button>
-                    <button 
-                      onClick={() => setWorkMode('WFH')}
-                      className={cn(
-                        "flex-1 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all",
-                        workMode === 'WFH' ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30" : "text-slate-400 hover:text-white"
-                      )}
-                    >
-                      WFH
-                    </button>
-                  </div>
+              <div className="w-full max-w-[200px] space-y-2">
+                <label className="block text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 text-center">Mode Kerja {getJakartaDate().getDay() === 5 ? '(Jumat)' : ''}</label>
+                <div className="flex bg-slate-800 p-1 rounded-2xl border border-slate-700">
+                  <button 
+                    onClick={() => setWorkMode('WFO')}
+                    className={cn(
+                      "flex-1 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all",
+                      workMode === 'WFO' ? "bg-brand-500 text-white shadow-lg shadow-brand-500/30" : "text-slate-400 hover:text-white"
+                    )}
+                  >
+                    WFO
+                  </button>
+                  <button 
+                    onClick={() => {
+                      if (getJakartaDate().getDay() === 5) {
+                        setWorkMode('WFH');
+                      } else {
+                        alert("Mode WFH hanya tersedia pada hari Jumat.");
+                      }
+                    }}
+                    className={cn(
+                      "flex-1 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all",
+                      workMode === 'WFH' ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30" : "text-slate-400 hover:text-white",
+                      getJakartaDate().getDay() !== 5 && "opacity-30 cursor-not-allowed"
+                    )}
+                  >
+                    WFH
+                  </button>
                 </div>
-              )}
+              </div>
 
               <div className="flex items-center gap-10">
                 <motion.button 
