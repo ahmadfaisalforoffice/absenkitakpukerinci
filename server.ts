@@ -65,6 +65,7 @@ const initDb = async () => {
         is_late INTEGER DEFAULT 0,
         late_minutes INTEGER DEFAULT 0,
         scheduled_out_time TIMESTAMPTZ,
+        work_mode TEXT DEFAULT 'WFO',
         FOREIGN KEY(user_id) REFERENCES users(id)
       );
 
@@ -73,6 +74,9 @@ const initDb = async () => {
       BEGIN 
         ALTER TABLE attendance ALTER COLUMN timestamp TYPE TIMESTAMPTZ;
         ALTER TABLE attendance ALTER COLUMN scheduled_out_time TYPE TIMESTAMPTZ;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='attendance' AND column_name='work_mode') THEN
+          ALTER TABLE attendance ADD COLUMN work_mode TEXT DEFAULT 'WFO';
+        END IF;
       EXCEPTION 
         WHEN undefined_column THEN 
           NULL;
@@ -205,13 +209,13 @@ app.get("/api/attendance/today", async (req, res) => {
 
 app.post("/api/attendance", async (req, res) => {
   try {
-    const { userId, type, photo, latitude, longitude, isLate, lateMinutes, scheduledOutTime, timestamp } = req.body;
+    const { userId, type, photo, latitude, longitude, isLate, lateMinutes, scheduledOutTime, timestamp, workMode } = req.body;
     
     const result = await pool.query(`
-      INSERT INTO attendance (user_id, type, photo, latitude, longitude, is_late, late_minutes, scheduled_out_time, timestamp)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, COALESCE($9, CURRENT_TIMESTAMP))
+      INSERT INTO attendance (user_id, type, photo, latitude, longitude, is_late, late_minutes, scheduled_out_time, timestamp, work_mode)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, COALESCE($9, CURRENT_TIMESTAMP), $10)
       RETURNING id
-    `, [userId, type, photo, latitude, longitude, isLate ? 1 : 0, lateMinutes, scheduledOutTime, timestamp]);
+    `, [userId, type, photo, latitude, longitude, isLate ? 1 : 0, lateMinutes, scheduledOutTime, timestamp, workMode || 'WFO']);
     
     res.json({ id: result.rows[0].id, status: "success" });
   } catch (err) {
@@ -262,7 +266,7 @@ app.post("/api/change-password", async (req, res) => {
 app.get("/api/admin/today-activity", async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT a.id, a.user_id, a.type, a.timestamp, a.latitude, a.longitude, a.is_late, a.late_minutes, a.scheduled_out_time, u.display_name 
+      SELECT a.id, a.user_id, a.type, a.timestamp, a.latitude, a.longitude, a.is_late, a.late_minutes, a.scheduled_out_time, a.work_mode, u.display_name 
       FROM attendance a 
       JOIN users u ON a.user_id = u.id 
       WHERE a.timestamp >= (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Jakarta')::date 
@@ -314,7 +318,7 @@ app.get("/api/admin/export", async (req, res) => {
   try {
     const { startDate, endDate, userId } = req.query;
     let query = `
-      SELECT u.display_name, a.timestamp, a.type, a.is_late, a.late_minutes
+      SELECT u.display_name, a.timestamp, a.type, a.is_late, a.late_minutes, a.work_mode
       FROM attendance a
       JOIN users u ON a.user_id = u.id
       WHERE 1=1
