@@ -50,6 +50,7 @@ type AttendanceRecord = {
   is_late: number;
   late_minutes: number;
   scheduled_out_time: string | null;
+  work_mode?: 'WFO' | 'WFH';
 };
 
 const PasswordInput = ({ label, value, onChange, placeholder }: any) => {
@@ -121,6 +122,7 @@ export default function App() {
   const [adminUsers, setAdminUsers] = useState<UserData[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState(getJakartaDate());
+  const [workMode, setWorkMode] = useState<'WFO' | 'WFH'>('WFO');
 
   // Filters
   const [historyFilter, setHistoryFilter] = useState({ start: '', end: '' });
@@ -323,6 +325,7 @@ export default function App() {
         'Tanggal': format(dateObj, 'dd-MM-yyyy'),
         'Jam': format(dateObj, 'HH:mm:ss'),
         'Tipe': r.type === 'in' ? 'Clock In' : 'Clock Out',
+        'Mode': r.work_mode || 'WFO',
         'Terlambat': r.is_late ? 'Ya' : 'Tidak',
         'Menit Terlambat': r.late_minutes
       };
@@ -343,9 +346,13 @@ export default function App() {
     }
 
     const dist = calculateDistance(location.lat, location.lng, OFFICE_LOCATION.lat, OFFICE_LOCATION.lng);
-    if (dist > OFFICE_LOCATION.radius) {
-      alert(`Anda berada di luar jangkauan kantor (${Math.round(dist)}m). Maksimal ${OFFICE_LOCATION.radius}m.`);
-      return;
+    const isFriday = getJakartaDate().getDay() === 5;
+    
+    if (workMode === 'WFO' || !isFriday) {
+      if (dist > OFFICE_LOCATION.radius) {
+        alert(`Anda berada di luar jangkauan kantor (${Math.round(dist)}m). Maksimal ${OFFICE_LOCATION.radius}m.`);
+        return;
+      }
     }
 
     const imageSrc = webcamRef.current?.getScreenshot();
@@ -407,7 +414,8 @@ export default function App() {
           isLate,
           lateMinutes,
           scheduledOutTime,
-          timestamp: getJakartaDate().toISOString()
+          timestamp: getJakartaDate().toISOString(),
+          workMode: getJakartaDate().getDay() === 5 ? workMode : 'WFO'
         })
       });
       
@@ -734,6 +742,14 @@ export default function App() {
                           Bisa pulang {format(parseDate(record.scheduled_out_time), 'HH:mm')}
                         </span>
                       )}
+                      {record.work_mode && (
+                        <span className={cn(
+                          "text-[9px] px-2.5 py-1 rounded-full font-bold uppercase tracking-wide border",
+                          record.work_mode === 'WFO' ? "bg-slate-50 text-slate-600 border-slate-100" : "bg-blue-50 text-blue-600 border-blue-100"
+                        )}>
+                          {record.work_mode}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </motion.div>
@@ -768,6 +784,7 @@ export default function App() {
                     <div className="flex items-center gap-2">
                       <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
                         {record.type === 'in' ? 'Clock In' : 'Clock Out'} • {format(parseDate(record.timestamp), 'HH:mm')}
+                        {record.work_mode && ` • ${record.work_mode}`}
                       </p>
                       {record.is_late === 1 && <span className="text-[8px] px-2 py-0.5 bg-red-50 text-red-500 rounded-full font-bold uppercase tracking-widest border border-red-100">Terlambat</span>}
                     </div>
@@ -1020,6 +1037,33 @@ export default function App() {
                 <p className="text-white font-extrabold text-xl mb-1 tracking-tight">Verifikasi Wajah</p>
                 <p className="text-slate-400 text-xs font-medium">Pastikan pencahayaan cukup dan wajah terlihat jelas</p>
               </div>
+
+              {getJakartaDate().getDay() === 5 && (
+                <div className="w-full max-w-[200px] space-y-2">
+                  <label className="block text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 text-center">Mode Kerja (Jumat)</label>
+                  <div className="flex bg-slate-800 p-1 rounded-2xl border border-slate-700">
+                    <button 
+                      onClick={() => setWorkMode('WFO')}
+                      className={cn(
+                        "flex-1 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all",
+                        workMode === 'WFO' ? "bg-brand-500 text-white shadow-lg shadow-brand-500/30" : "text-slate-400 hover:text-white"
+                      )}
+                    >
+                      WFO
+                    </button>
+                    <button 
+                      onClick={() => setWorkMode('WFH')}
+                      className={cn(
+                        "flex-1 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all",
+                        workMode === 'WFH' ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30" : "text-slate-400 hover:text-white"
+                      )}
+                    >
+                      WFH
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <div className="flex items-center gap-10">
                 <motion.button 
                   whileTap={{ scale: 0.9 }}
