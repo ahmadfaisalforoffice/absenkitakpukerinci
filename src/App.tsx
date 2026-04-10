@@ -29,6 +29,7 @@ import Webcam from 'react-webcam';
 import { format, isAfter, parse, addMinutes, differenceInMinutes, startOfDay, endOfDay } from 'date-fns';
 import { cn, OFFICE_LOCATION, calculateDistance, getWorkSchedule, parseDate, getJakartaDate } from './lib/utils';
 import * as XLSX from 'xlsx';
+import { supabase, SUPABASE_BUCKET } from './lib/supabase';
 
 type UserData = {
   id: number;
@@ -340,6 +341,41 @@ export default function App() {
     XLSX.writeFile(workbook, `Laporan_Absensi_KPU_Kerinci_${format(getJakartaDate(), 'yyyyMMdd')}.xlsx`);
   };
 
+  const uploadPhoto = async (base64: string, userId: number, type: string) => {
+    try {
+      // Convert base64 to blob
+      const base64Data = base64.split(',')[1];
+      const byteCharacters = atob(base64Data);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'image/jpeg' });
+
+      const fileName = `${userId}_${type}_${Date.now()}.jpg`;
+      const filePath = `photos/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from(SUPABASE_BUCKET)
+        .upload(filePath, blob, {
+          contentType: 'image/jpeg',
+          upsert: true
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage
+        .from(SUPABASE_BUCKET)
+        .getPublicUrl(filePath);
+
+      return data.publicUrl;
+    } catch (err) {
+      console.error('Error uploading to Supabase:', err);
+      return null;
+    }
+  };
+
   const handleAttendance = async () => {
     if (!location || !user) {
       setCameraMessage({ text: "Mohon izinkan akses lokasi", type: 'error' });
@@ -366,8 +402,17 @@ export default function App() {
     }
 
     setLoading(true);
-    const schedule = getWorkSchedule(getJakartaDate());
     const type = todayRecords.some(r => r.type === 'in') ? 'out' : 'in';
+    
+    // Upload photo to Supabase first
+    const photoUrl = await uploadPhoto(imageSrc, user.id, type);
+    if (!photoUrl) {
+      setCameraMessage({ text: "Gagal mengunggah foto ke storage", type: 'error' });
+      setLoading(false);
+      return;
+    }
+
+    const schedule = getWorkSchedule(getJakartaDate());
     
     // Logic: Earliest check-in 06:00
     if (type === 'in') {
@@ -412,7 +457,7 @@ export default function App() {
         body: JSON.stringify({
           userId: user.id,
           type,
-          photo: imageSrc,
+          photo: photoUrl,
           latitude: location.lat,
           longitude: location.lng,
           isLate,
