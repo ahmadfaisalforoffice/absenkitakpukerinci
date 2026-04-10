@@ -123,6 +123,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState(getJakartaDate());
   const [workMode, setWorkMode] = useState<'WFO' | 'WFH'>('WFO');
+  const [cameraMessage, setCameraMessage] = useState<{ text: string; type: 'error' | 'info' } | null>(null);
 
   // Filters
   const [historyFilter, setHistoryFilter] = useState({ start: '', end: '' });
@@ -341,7 +342,7 @@ export default function App() {
 
   const handleAttendance = async () => {
     if (!location || !user) {
-      alert("Mohon izinkan akses lokasi");
+      setCameraMessage({ text: "Mohon izinkan akses lokasi", type: 'error' });
       return;
     }
 
@@ -350,14 +351,17 @@ export default function App() {
     
     if (workMode === 'WFO' || !isFriday) {
       if (dist > OFFICE_LOCATION.radius) {
-        alert(`Anda berada di luar jangkauan kantor (${Math.round(dist)}m). Maksimal ${OFFICE_LOCATION.radius}m.`);
+        setCameraMessage({ 
+          text: `Anda berada di luar jangkauan kantor (${Math.round(dist)}m). Maksimal ${OFFICE_LOCATION.radius}m.`, 
+          type: 'error' 
+        });
         return;
       }
     }
 
     const imageSrc = webcamRef.current?.getScreenshot();
     if (!imageSrc) {
-      alert("Gagal mengambil foto");
+      setCameraMessage({ text: "Gagal mengambil foto", type: 'error' });
       return;
     }
 
@@ -370,7 +374,7 @@ export default function App() {
       const now = getJakartaDate();
       const earliest = parse('06:00', 'HH:mm', now);
       if (now < earliest) {
-        alert("Absen masuk baru tersedia mulai pukul 06:00 WIB.");
+        setCameraMessage({ text: "Absen masuk baru tersedia mulai pukul 06:00 WIB.", type: 'error' });
         setLoading(false);
         return;
       }
@@ -419,8 +423,15 @@ export default function App() {
         })
       });
       
-      if (alertMessage) alert(alertMessage);
-      setIsCameraOpen(false);
+      if (alertMessage) {
+        setCameraMessage({ text: alertMessage, type: 'info' });
+        setTimeout(() => {
+          setIsCameraOpen(false);
+          setCameraMessage(null);
+        }, 3000);
+      } else {
+        setIsCameraOpen(false);
+      }
       fetchTodayRecords();
       fetchHistory();
     } catch (err) {
@@ -1038,6 +1049,22 @@ export default function App() {
                 <p className="text-slate-400 text-xs font-medium">Pastikan pencahayaan cukup dan wajah terlihat jelas</p>
               </div>
 
+              <AnimatePresence>
+                {cameraMessage && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className={cn(
+                      "px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider text-center",
+                      cameraMessage.type === 'error' ? "bg-red-500/20 text-red-400 border border-red-500/30" : "bg-brand-500/20 text-brand-400 border border-brand-500/30"
+                    )}
+                  >
+                    {cameraMessage.text}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               <div className="w-full max-w-[200px] space-y-2">
                 <label className="block text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 text-center">Mode Kerja {getJakartaDate().getDay() === 5 ? '(Jumat)' : ''}</label>
                 <div className="flex bg-slate-800 p-1 rounded-2xl border border-slate-700">
@@ -1054,8 +1081,10 @@ export default function App() {
                     onClick={() => {
                       if (getJakartaDate().getDay() === 5) {
                         setWorkMode('WFH');
+                        setCameraMessage(null);
                       } else {
-                        alert("Mode WFH hanya tersedia pada hari Jumat.");
+                        setCameraMessage({ text: "Mode WFH hanya tersedia pada hari Jumat.", type: 'error' });
+                        setTimeout(() => setCameraMessage(null), 3000);
                       }
                     }}
                     className={cn(
