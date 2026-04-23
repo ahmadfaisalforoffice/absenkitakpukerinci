@@ -107,7 +107,7 @@ const LoadingOverlay = ({ loading }: { loading: boolean }) => (
 
 export default function App() {
   const [user, setUser] = useState<UserData | null>(() => {
-    const saved = localStorage.getItem('user');
+    const saved = sessionStorage.getItem('user');
     return saved ? JSON.parse(saved) : null;
   });
   const [loginData, setLoginData] = useState({ username: '', password: '' });
@@ -169,7 +169,28 @@ export default function App() {
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(getJakartaDate()), 1000);
+    
+    // Inactivity Timeout Logic (15 minutes)
+    let inactivityTimer: NodeJS.Timeout;
+    const INACTIVITY_LIMIT = 15 * 60 * 1000; // 15 minutes
+
+    const resetInactivityTimer = () => {
+      clearTimeout(inactivityTimer);
+      if (user) {
+        inactivityTimer = setTimeout(() => {
+          handleLogout();
+          alert("Sesi Anda telah berakhir karena tidak ada aktivitas.");
+        }, INACTIVITY_LIMIT);
+      }
+    };
+
     if (user) {
+      resetInactivityTimer();
+      window.addEventListener('mousemove', resetInactivityTimer);
+      window.addEventListener('keydown', resetInactivityTimer);
+      window.addEventListener('click', resetInactivityTimer);
+      window.addEventListener('scroll', resetInactivityTimer);
+      
       if (user.role === 'admin') {
         setActiveTab('admin-dash');
         fetchAdminData();
@@ -178,7 +199,15 @@ export default function App() {
         fetchHistory();
       }
     }
-    return () => clearInterval(timer);
+
+    return () => {
+      clearInterval(timer);
+      clearTimeout(inactivityTimer);
+      window.removeEventListener('mousemove', resetInactivityTimer);
+      window.removeEventListener('keydown', resetInactivityTimer);
+      window.removeEventListener('click', resetInactivityTimer);
+      window.removeEventListener('scroll', resetInactivityTimer);
+    };
   }, [user]);
 
   const fetchAdminData = async () => {
@@ -268,7 +297,7 @@ export default function App() {
       const data = await res.json();
       if (res.ok) {
         setUser(data);
-        localStorage.setItem('user', JSON.stringify(data));
+        sessionStorage.setItem('user', JSON.stringify(data));
       } else {
         setError(data.error);
       }
@@ -281,7 +310,7 @@ export default function App() {
 
   const handleLogout = () => {
     setUser(null);
-    localStorage.removeItem('user');
+    sessionStorage.removeItem('user');
     setActiveTab('home');
   };
 
