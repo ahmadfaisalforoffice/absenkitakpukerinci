@@ -645,102 +645,102 @@ export default function App() {
               <motion.div 
                 initial={{ opacity: 0, y: 20 }} 
                 animate={{ opacity: 1, y: 0 }} 
-                className="glass-dark text-white p-5 rounded-[2.2rem] shadow-2xl shadow-slate-900/20 relative overflow-hidden"
+                className="glass-dark text-white p-8 rounded-[3rem] shadow-2xl shadow-slate-900/20 relative overflow-hidden flex flex-col items-center justify-center min-h-[220px]"
               >
-                <div className="relative z-10 text-center">
-                  <div className="flex items-center justify-center gap-2 mb-1.5 opacity-60">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Current Time</span>
+                <div className="relative z-10 text-center w-full">
+                  <div className="flex items-center justify-center gap-2 mb-3 opacity-60">
+                    <Clock className="w-5 h-5" />
+                    <span className="text-xs font-bold uppercase tracking-[0.2em]">Current Time</span>
                   </div>
-                  <div className="text-4xl font-extrabold tracking-tighter mb-4 font-mono">{format(currentTime, 'HH:mm:ss')}</div>
-                  <div className="flex gap-3">
-                    <div className="flex-1 bg-white/5 rounded-2xl p-3 border border-white/10 backdrop-blur-md">
-                      <p className="text-[8px] font-bold uppercase tracking-widest text-slate-300 mb-1">Clock In</p>
-                      <p className="text-base font-bold">{schedule?.start || '--:--'}</p>
+                  <div className="text-7xl font-extrabold tracking-tighter mb-8 font-mono">{format(currentTime, 'HH:mm:ss')}</div>
+                  <div className="flex gap-4">
+                    <div className="flex-1 bg-white/5 rounded-2xl p-5 border border-white/10 backdrop-blur-md">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-300 mb-1">Clock In</p>
+                      <p className="text-lg font-bold">{schedule?.start || '--:--'}</p>
                     </div>
-                    <div className="flex-1 bg-white/5 rounded-2xl p-3 border border-white/10 backdrop-blur-md">
-                      <p className="text-[8px] font-bold uppercase tracking-widest text-slate-300 mb-1">Clock Out</p>
-                      <p className="text-base font-bold">{checkIn?.scheduled_out_time ? format(parseDate(checkIn.scheduled_out_time), 'HH:mm') : schedule?.end || '--:--'}</p>
+                    <div className="flex-1 bg-white/5 rounded-2xl p-5 border border-white/10 backdrop-blur-md">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-300 mb-1">Clock Out</p>
+                      <p className="text-lg font-bold">{checkIn?.scheduled_out_time ? format(parseDate(checkIn.scheduled_out_time), 'HH:mm') : schedule?.end || '--:--'}</p>
                     </div>
                   </div>
                 </div>
-                <div className="absolute -top-12 -right-12 w-48 h-48 bg-brand-500/30 rounded-full blur-[60px]" />
-                <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-emerald-500/20 rounded-full blur-[60px]" />
+                <div className="absolute -top-12 -right-12 w-64 h-64 bg-brand-500/30 rounded-full blur-[80px]" />
+                <div className="absolute -bottom-12 -left-12 w-64 h-64 bg-emerald-500/20 rounded-full blur-[80px]" />
               </motion.div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 <motion.div 
                   whileHover={{ scale: 1.02 }}
                   className={cn(
-                    "p-4 rounded-[1.8rem] border transition-all duration-500 card-hover flex flex-col justify-center", 
+                    "p-6 rounded-[2.5rem] border transition-all duration-500 card-hover flex flex-col justify-center min-h-[160px]", 
                     checkIn ? "bg-emerald-50/50 border-emerald-100 shadow-lg shadow-emerald-500/5" : "bg-white border-slate-100 shadow-sm"
                   )}
                 >
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center transition-colors", checkIn ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30" : "bg-slate-50 text-slate-300")}>
-                      <CheckCircle2 className="w-5 h-5" />
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center transition-colors", checkIn ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30" : "bg-slate-50 text-slate-300")}>
+                      <CheckCircle2 className="w-7 h-7" />
                     </div>
-                    <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Clock In</span>
+                    <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Clock In</span>
                   </div>
-                  <p className="text-xl font-extrabold text-slate-900">{checkIn ? format(parseDate(checkIn.timestamp), 'HH:mm') : '--:--'}</p>
+                  <p className="text-4xl font-extrabold text-slate-900">{checkIn ? format(parseDate(checkIn.timestamp), 'HH:mm') : '--:--'}</p>
                   {checkIn?.is_late ? (
-                    <div className="flex items-center gap-1 mt-1 text-red-500">
-                      <AlertCircle className="w-3 h-3" />
-                      <p className="text-[8px] font-bold uppercase">Terlambat {checkIn.late_minutes}m</p>
+                    <div className="flex items-center gap-1 mt-2 text-red-500">
+                      <AlertCircle className="w-4 h-4" />
+                      <p className="text-[10px] font-bold uppercase">Terlambat {checkIn.late_minutes}m</p>
                     </div>
                   ) : checkIn && (
-                    <p className="text-[8px] text-emerald-600 font-bold mt-1 uppercase tracking-wide">Tepat Waktu</p>
+                    <p className="text-[11px] text-emerald-600 font-bold mt-2 uppercase tracking-wide">Tepat Waktu</p>
                   )}
                 </motion.div>
 
                 <motion.div 
                   whileHover={{ scale: 1.02 }}
                   className={cn(
-                    "p-4 rounded-[1.8rem] border transition-all duration-500 card-hover flex flex-col justify-center", 
+                    "p-6 rounded-[2.5rem] border transition-all duration-500 card-hover flex flex-col justify-center min-h-[160px]", 
                     checkOut ? "bg-brand-50/50 border-brand-100 shadow-lg shadow-brand-500/5" : "bg-white border-slate-100 shadow-sm"
                   )}
                 >
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center transition-colors", checkOut ? "bg-brand-500 text-white shadow-lg shadow-brand-500/30" : "bg-slate-50 text-slate-300")}>
-                      <LogOut className="w-5 h-5" />
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center transition-colors", checkOut ? "bg-brand-500 text-white shadow-lg shadow-brand-500/30" : "bg-slate-50 text-slate-300")}>
+                      <LogOut className="w-7 h-7" />
                     </div>
-                    <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Clock Out</span>
+                    <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Clock Out</span>
                   </div>
-                  <p className="text-xl font-extrabold text-slate-900">{checkOut ? format(parseDate(checkOut.timestamp), 'HH:mm') : '--:--'}</p>
-                  {checkOut && <p className="text-[8px] text-brand-600 font-bold mt-1 uppercase tracking-wide">Sudah Absen</p>}
+                  <p className="text-4xl font-extrabold text-slate-900">{checkOut ? format(parseDate(checkOut.timestamp), 'HH:mm') : '--:--'}</p>
+                  {checkOut && <p className="text-[11px] text-brand-600 font-bold mt-2 uppercase tracking-wide">Sudah Absen</p>}
                 </motion.div>
               </div>
 
-              <div className="glass p-4 rounded-[1.8rem] flex items-center justify-between card-hover border-slate-100/50">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center shadow-inner">
-                    <MapPin className={cn("w-5 h-5", distance !== null && distance <= OFFICE_LOCATION.radius ? "text-emerald-500" : "text-slate-300")} />
+              <div className="glass p-7 rounded-[2.8rem] flex items-center justify-between card-hover border-slate-100/50 shadow-lg shadow-slate-200/20">
+                <div className="flex items-center gap-5">
+                  <div className="w-16 h-16 rounded-[1.5rem] bg-slate-50 flex items-center justify-center shadow-inner">
+                    <MapPin className={cn("w-8 h-8", distance !== null && distance <= OFFICE_LOCATION.radius ? "text-emerald-500" : "text-slate-300")} />
                   </div>
                   <div>
-                    <p className="text-[8px] font-bold uppercase tracking-[0.15em] text-slate-400 mb-0.5">Status Lokasi</p>
-                    <p className={cn("text-sm font-bold", distance !== null && distance <= OFFICE_LOCATION.radius ? "text-slate-900" : "text-red-500")}>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-400 mb-1">Status Lokasi</p>
+                    <p className={cn("text-lg font-bold", distance !== null && distance <= OFFICE_LOCATION.radius ? "text-slate-900" : "text-red-500")}>
                       {distance !== null ? (distance <= OFFICE_LOCATION.radius ? "Dalam Jangkauan" : `Luar Jangkauan (${Math.round(distance)}m)`) : "Searching..."}
                     </p>
                   </div>
                 </div>
-                <button onClick={requestLocation} className="p-2 bg-brand-50 text-brand-600 rounded-lg hover:bg-brand-100 transition-colors shadow-sm">
-                  <RotateCcw className="w-4 h-4" />
+                <button onClick={requestLocation} className="p-4 bg-brand-50 text-brand-600 rounded-2xl hover:bg-brand-100 transition-colors shadow-sm">
+                  <RotateCcw className="w-6 h-6" />
                 </button>
               </div>
             </div>
 
-            <div className="pt-4">
+            <div className="pt-8">
               {!checkOut && (
                 <motion.button 
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.98 }} 
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.97 }} 
                   onClick={() => { requestLocation(); setIsCameraOpen(true); }} 
-                  className="w-full py-4 bg-gradient-to-r from-brand-600 to-brand-700 text-white rounded-[1.8rem] font-bold shadow-xl shadow-brand-500/30 flex items-center justify-center gap-3 transition-all group"
+                  className="w-full py-7 bg-gradient-to-r from-brand-600 to-brand-700 text-white rounded-[3rem] font-extrabold shadow-2xl shadow-brand-500/40 flex items-center justify-center gap-4 transition-all group"
                 >
-                  <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-105 transition-transform">
-                    <Camera className="w-5 h-5" />
+                  <div className="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Camera className="w-8 h-8" />
                   </div>
-                  <span className="text-base tracking-tight">{checkIn ? "Absen Pulang" : "Absen Masuk"}</span>
+                  <span className="text-2xl tracking-tight">{checkIn ? "Absen Pulang" : "Absen Masuk"}</span>
                 </motion.button>
               )}
             </div>
