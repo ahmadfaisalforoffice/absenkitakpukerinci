@@ -627,10 +627,10 @@ export default function App() {
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto p-4 pb-20">
+      <main className="flex-1 overflow-hidden p-4 pb-20">
         {activeTab === 'home' && (
-          <div className="flex flex-col justify-between min-h-full py-1">
-            <div className="flex flex-col gap-4">
+          <div className="flex flex-col h-full justify-around py-2 px-1">
+            <div className="flex-1 flex flex-col justify-around">
               {error && (
                 <motion.div 
                   initial={{ opacity: 0, y: -10 }} 
