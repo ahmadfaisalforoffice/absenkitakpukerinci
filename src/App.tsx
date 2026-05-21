@@ -57,13 +57,13 @@ type AttendanceRecord = {
 const PasswordInput = ({ label, value, onChange, placeholder }: any) => {
   const [visible, setVisible] = useState(false);
   return (
-    <div className="space-y-2">
-      <label className="block text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 ml-1">{label}</label>
+    <div className="space-y-1.5">
+      <label className="block text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400 ml-1">{label}</label>
       <div className="relative group">
         <input 
           type={visible ? "text" : "password"}
           required
-          className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all font-medium pr-12 outline-none"
+          className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all font-medium pr-12 outline-none text-sm"
           placeholder={placeholder}
           value={value}
           onChange={e => onChange(e.target.value)}
@@ -73,7 +73,7 @@ const PasswordInput = ({ label, value, onChange, placeholder }: any) => {
           onClick={() => setVisible(!visible)}
           className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-brand-600 transition-colors"
         >
-          {visible ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+          {visible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
         </button>
       </div>
     </div>
@@ -92,13 +92,13 @@ const LoadingOverlay = ({ loading }: { loading: boolean }) => (
         <motion.div 
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="bg-white/90 p-8 rounded-[2.5rem] shadow-2xl border border-white/50 flex flex-col items-center gap-4"
+          className="bg-white/90 p-6 rounded-2xl shadow-2xl border border-white/50 flex flex-col items-center gap-3"
         >
           <div className="relative">
-            <Loader2 className="w-12 h-12 text-brand-600 animate-spin" />
+            <Loader2 className="w-10 h-10 text-brand-600 animate-spin" />
             <div className="absolute inset-0 bg-brand-500/20 blur-xl rounded-full animate-pulse" />
           </div>
-          <p className="text-sm font-bold text-slate-900 tracking-tight">Memproses...</p>
+          <p className="text-xs font-bold text-slate-900 tracking-tight">Memproses...</p>
         </motion.div>
       </motion.div>
     )}
@@ -535,28 +535,28 @@ export default function App() {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-sm glass p-10 rounded-[3rem] relative z-10"
+          className="w-full max-w-sm glass p-8 rounded-[2.5rem] relative z-10"
         >
-          <div className="text-center mb-10">
+          <div className="text-center mb-8">
             <motion.div 
               initial={{ scale: 0.5, rotate: -10 }}
               animate={{ scale: 1, rotate: 0 }}
-              className="w-24 h-24 bg-white rounded-[2.5rem] flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-brand-500/20 p-2"
+              className="w-20 h-20 bg-white rounded-[2rem] flex items-center justify-center mx-auto mb-5 shadow-2xl shadow-brand-500/20 p-2"
             >
               <img src="/logo.png" alt="Logo AbsenKita" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
             </motion.div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 mb-1">Absen<span className="text-brand-600">Kita</span></h1>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">KPU Kabupaten Kerinci</p>
+            <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 mb-1">Absen<span className="text-brand-600">Kita</span></h1>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">KPU Kabupaten Kerinci</p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-6">
-            <div className="space-y-2">
-              <label className="block text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 mb-1 ml-1">Username</label>
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div className="space-y-1.5">
+              <label className="block text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400 mb-1 ml-1">Username</label>
               <div className="relative group">
                 <input 
                   type="text" 
                   required
-                  className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all font-medium outline-none"
+                  className="w-full px-4 py-3.5 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all font-medium outline-none"
                   placeholder="email@kpukerinci"
                   value={loginData.username}
                   onChange={e => setLoginData({...loginData, username: e.target.value})}
@@ -578,7 +578,7 @@ export default function App() {
             <button 
               type="submit"
               disabled={loading}
-              className="w-full py-5 btn-primary rounded-2xl font-bold flex items-center justify-center gap-3 text-sm tracking-wide"
+              className="w-full py-4 btn-primary rounded-xl font-bold flex items-center justify-center gap-3 text-sm tracking-wide"
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                 <>
@@ -600,100 +600,103 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col max-w-md mx-auto shadow-2xl relative overflow-hidden">
-      {/* Header */}
-      <header className="p-6 glass sticky top-0 z-30 flex justify-between items-center border-b-0 rounded-b-[2rem]">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center p-1 shadow-sm border border-slate-100">
+      {/* Header - Compact */}
+      <header className="px-4 py-2.5 glass sticky top-0 z-30 flex justify-between items-center border-b-0 rounded-b-[1.5rem]">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center p-1 shadow-sm border border-slate-100">
             <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
           </div>
           <div>
-            <h1 className="text-lg font-extrabold tracking-tight text-slate-900 leading-tight">Absen<span className="text-brand-600">Kita</span></h1>
-            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.15em]">{user.display_name}</p>
+            <h1 className="text-base font-extrabold tracking-tight text-slate-900 leading-tight">Absen<span className="text-brand-600">Kita</span></h1>
+            <p className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.15em]">{user.display_name}</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <button 
             onClick={() => setActiveTab('profile')}
             className={cn(
-              "p-2.5 rounded-2xl transition-all duration-300",
+              "p-2 rounded-xl transition-all duration-300",
               activeTab === 'profile' ? "bg-brand-500 text-white shadow-lg shadow-brand-500/30" : "bg-slate-50 text-slate-400 hover:bg-slate-100"
             )}
           >
-            <User className="w-5 h-5" />
+            <User className="w-4 h-4" />
           </button>
-          <button onClick={handleLogout} className="p-2.5 bg-slate-50 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all">
-            <LogOut className="w-5 h-5" />
+          <button onClick={handleLogout} className="p-2 bg-slate-50 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all">
+            <LogOut className="w-4 h-4" />
           </button>
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto p-6 space-y-6 pb-28">
+      {/* Main Content - Tighter spacing */}
+      <main className="flex-1 overflow-y-auto px-4 py-3 space-y-3 pb-20">
         {activeTab === 'home' && (
           <>
             {error && (
               <motion.div 
                 initial={{ opacity: 0, y: -10 }} 
                 animate={{ opacity: 1, y: 0 }} 
-                className="bg-red-50 border border-red-100 p-4 rounded-2xl flex items-center gap-3 mb-4"
+                className="bg-red-50 border border-red-100 p-3 rounded-xl flex items-center gap-2"
               >
-                <AlertCircle className="w-5 h-5 text-red-500" />
-                <p className="text-[10px] font-bold text-red-600 uppercase tracking-wider">{error}</p>
+                <AlertCircle className="w-4 h-4 text-red-500" />
+                <p className="text-[9px] font-bold text-red-600 uppercase tracking-wider">{error}</p>
               </motion.div>
             )}
 
+            {/* Clock Section - Smaller */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }} 
               animate={{ opacity: 1, y: 0 }} 
-              className="glass-dark text-white p-8 rounded-[3rem] shadow-2xl shadow-slate-900/20 relative overflow-hidden"
+              className="glass-dark text-white p-4 rounded-2xl shadow-2xl shadow-slate-900/20 relative overflow-hidden"
             >
               <div className="relative z-10">
-                <div className="flex items-center gap-2 mb-3 opacity-60">
-                  <Clock className="w-4 h-4" />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Current Time</span>
+                <div className="flex items-center gap-1.5 mb-1.5 opacity-60">
+                  <Clock className="w-3 h-3" />
+                  <span className="text-[8px] font-bold uppercase tracking-[0.2em]">Current Time</span>
                 </div>
-                <div className="text-6xl font-extrabold tracking-tighter mb-6 font-mono">{format(currentTime, 'HH:mm:ss')}</div>
-                <div className="flex gap-4">
-                  <div className="flex-1 bg-white/5 rounded-2xl p-3 border border-white/10 backdrop-blur-md">
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-1">Clock In Schedule</p>
-                    <p className="text-lg font-bold">{schedule?.start || '--:--'}</p>
+                <div className="text-4xl font-extrabold tracking-tighter mb-3 font-mono">{format(currentTime, 'HH:mm:ss')}</div>
+                <div className="flex gap-2.5">
+                  <div className="flex-1 bg-white/5 rounded-lg p-2 border border-white/10 backdrop-blur-md">
+                    <p className="text-[7px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Clock In</p>
+                    <p className="text-sm font-bold">{schedule?.start || '--:--'}</p>
                   </div>
-                  <div className="flex-1 bg-white/5 rounded-2xl p-4 border border-white/10 backdrop-blur-md">
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-1">Clock Out Schedule</p>
-                    <p className="text-lg font-bold">{checkIn?.scheduled_out_time ? format(parseDate(checkIn.scheduled_out_time), 'HH:mm') : schedule?.end || '--:--'}</p>
+                  <div className="flex-1 bg-white/5 rounded-lg p-2 border border-white/10 backdrop-blur-md">
+                    <p className="text-[7px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Clock Out</p>
+                    <p className="text-sm font-bold">{checkIn?.scheduled_out_time ? format(parseDate(checkIn.scheduled_out_time), 'HH:mm') : schedule?.end || '--:--'}</p>
                   </div>
                 </div>
               </div>
               {/* Decorative Gradients */}
-              <div className="absolute -top-12 -right-12 w-48 h-48 bg-brand-500/30 rounded-full blur-[60px]" />
-              <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-emerald-500/20 rounded-full blur-[60px]" />
+              <div className="absolute -top-8 -right-8 w-28 h-28 bg-brand-500/30 rounded-full blur-[50px]" />
+              <div className="absolute -bottom-8 -left-8 w-28 h-28 bg-emerald-500/20 rounded-full blur-[50px]" />
             </motion.div>
 
-            <div className="grid grid-cols-2 gap-4">
+            {/* Clock In / Clock Out Cards - Compact */}
+            <div className="grid grid-cols-2 gap-2.5">
               <motion.div 
                 whileHover={{ scale: 1.02 }}
                 className={cn(
-                  "p-6 rounded-[2.5rem] border transition-all duration-500 card-hover", 
+                  "p-3.5 rounded-xl border transition-all duration-500 card-hover", 
                   checkIn ? "bg-emerald-50/50 border-emerald-100 shadow-lg shadow-emerald-500/5" : "bg-white border-slate-100"
                 )}
               >
-                <div className="flex items-center gap-2 mb-3">
-                  <div className={cn("w-9 h-9 rounded-2xl flex items-center justify-center transition-colors", checkIn ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30" : "bg-slate-50 text-slate-300")}>
-                    <CheckCircle2 className="w-5 h-5" />
+                <div className="flex items-center gap-1.5 mb-1.5">
+                  <div className={cn("w-6 h-6 rounded-lg flex items-center justify-center transition-colors", checkIn ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30" : "bg-slate-50 text-slate-300")}>
+                    <CheckCircle2 className="w-3.5 h-3.5" />
                   </div>
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Clock In</span>
+                  <span className="text-[8px] font-bold uppercase tracking-widest text-slate-400">Clock In</span>
                 </div>
-                <p className="text-2xl font-extrabold text-slate-900">{checkIn ? format(parseDate(checkIn.timestamp), 'HH:mm') : '--:--'}</p>
+                <p className="text-xl font-extrabold text-slate-900">{checkIn ? format(parseDate(checkIn.timestamp), 'HH:mm') : '--:--'}</p>
                 {checkIn?.is_late ? (
-                  <div className="flex items-center gap-1 mt-2 text-red-500">
-                    <AlertCircle className="w-3 h-3" />
-                    <p className="text-[9px] font-bold uppercase">Terlambat {checkIn.late_minutes}m</p>
+                  <div className="flex items-center gap-1 mt-1 text-red-500">
+                    <AlertCircle className="w-2.5 h-2.5" />
+                    <p className="text-[7px] font-bold uppercase">Terlambat {checkIn.late_minutes}m</p>
                   </div>
                 ) : checkIn && (
-                  <p className="text-[9px] text-emerald-600 font-bold mt-2 uppercase tracking-wide">Tepat Waktu</p>
+                  <p className="text-[7px] text-emerald-600 font-bold mt-1 uppercase tracking-wide">Tepat Waktu</p>
                 )}
                 {checkIn?.scheduled_out_time && (
-                  <div className="mt-2 pt-2 border-t border-emerald-100/50">
-                    <p className="text-[8px] text-brand-600 font-bold uppercase tracking-wider">Bisa pulang jam {format(parseDate(checkIn.scheduled_out_time), 'HH:mm')}</p>
+                  <div className="mt-1 pt-1 border-t border-emerald-100/50">
+                    <p className="text-[7px] text-brand-600 font-bold uppercase tracking-wider">Pulang {format(parseDate(checkIn.scheduled_out_time), 'HH:mm')}</p>
                   </div>
                 )}
               </motion.div>
@@ -701,66 +704,68 @@ export default function App() {
               <motion.div 
                 whileHover={{ scale: 1.02 }}
                 className={cn(
-                  "p-6 rounded-[2.5rem] border transition-all duration-500 card-hover", 
+                  "p-3.5 rounded-xl border transition-all duration-500 card-hover", 
                   checkOut ? "bg-brand-50/50 border-brand-100 shadow-lg shadow-brand-500/5" : "bg-white border-slate-100"
                 )}
               >
-                <div className="flex items-center gap-2 mb-3">
-                  <div className={cn("w-9 h-9 rounded-2xl flex items-center justify-center transition-colors", checkOut ? "bg-brand-500 text-white shadow-lg shadow-brand-500/30" : "bg-slate-50 text-slate-300")}>
-                    <LogOut className="w-5 h-5" />
+                <div className="flex items-center gap-1.5 mb-1.5">
+                  <div className={cn("w-6 h-6 rounded-lg flex items-center justify-center transition-colors", checkOut ? "bg-brand-500 text-white shadow-lg shadow-brand-500/30" : "bg-slate-50 text-slate-300")}>
+                    <LogOut className="w-3.5 h-3.5" />
                   </div>
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Clock Out</span>
+                  <span className="text-[8px] font-bold uppercase tracking-widest text-slate-400">Clock Out</span>
                 </div>
-                <p className="text-2xl font-extrabold text-slate-900">{checkOut ? format(parseDate(checkOut.timestamp), 'HH:mm') : '--:--'}</p>
-                {checkOut && <p className="text-[9px] text-brand-600 font-bold mt-2 uppercase tracking-wide">Sudah Absen</p>}
+                <p className="text-xl font-extrabold text-slate-900">{checkOut ? format(parseDate(checkOut.timestamp), 'HH:mm') : '--:--'}</p>
+                {checkOut && <p className="text-[7px] text-brand-600 font-bold mt-1 uppercase tracking-wide">Sudah Absen</p>}
               </motion.div>
             </div>
 
-            <div className="glass p-6 rounded-[2.5rem] flex items-center justify-between card-hover">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center shadow-inner">
-                  <MapPin className={cn("w-6 h-6", distance !== null && distance <= OFFICE_LOCATION.radius ? "text-emerald-500" : "text-slate-300")} />
+            {/* Location Status - Compact */}
+            <div className="glass p-3 rounded-xl flex items-center justify-between card-hover">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center shadow-inner">
+                  <MapPin className={cn("w-4 h-4", distance !== null && distance <= OFFICE_LOCATION.radius ? "text-emerald-500" : "text-slate-300")} />
                 </div>
                 <div>
-                  <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400 mb-0.5">Status Lokasi</p>
-                  <p className={cn("text-sm font-bold", distance !== null && distance <= OFFICE_LOCATION.radius ? "text-slate-900" : "text-red-500")}>
+                  <p className="text-[7px] font-bold uppercase tracking-[0.15em] text-slate-400 mb-0.5">Status Lokasi</p>
+                  <p className={cn("text-xs font-bold", distance !== null && distance <= OFFICE_LOCATION.radius ? "text-slate-900" : "text-red-500")}>
                     {distance !== null ? (distance <= OFFICE_LOCATION.radius ? "Dalam Jangkauan" : `Luar Jangkauan (${Math.round(distance)}m)`) : "Searching for Location"}
                   </p>
                 </div>
               </div>
-              <button onClick={requestLocation} className="p-2.5 bg-brand-50 text-brand-600 rounded-xl hover:bg-brand-100 transition-colors">
-                <RotateCcw className="w-4 h-4" />
+              <button onClick={requestLocation} className="p-1.5 bg-brand-50 text-brand-600 rounded-lg hover:bg-brand-100 transition-colors">
+                <RotateCcw className="w-3.5 h-3.5" />
               </button>
             </div>
 
+            {/* Attendance Button - Compact */}
             {!checkOut && (
               <motion.button 
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }} 
                 onClick={() => { requestLocation(); setIsCameraOpen(true); }} 
-                className="w-full py-6 bg-gradient-to-r from-brand-600 to-brand-700 text-white rounded-[2.5rem] font-bold shadow-xl shadow-brand-500/30 flex items-center justify-center gap-3 transition-all group"
+                className="w-full py-3.5 bg-gradient-to-r from-brand-600 to-brand-700 text-white rounded-xl font-bold shadow-xl shadow-brand-500/30 flex items-center justify-center gap-2.5 transition-all group"
               >
-                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Camera className="w-5 h-5" />
+                <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Camera className="w-3.5 h-3.5" />
                 </div>
-                <span className="text-lg tracking-tight">{checkIn ? "Absen Pulang" : "Absen Masuk"}</span>
+                <span className="text-sm tracking-tight font-bold">{checkIn ? "Absen Pulang" : "Absen Masuk"}</span>
               </motion.button>
             )}
           </>
         )}
 
         {activeTab === 'history' && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">Riwayat <span className="text-brand-600">Absensi</span></h2>
+              <h2 className="text-lg font-extrabold tracking-tight text-slate-900">Riwayat <span className="text-brand-600">Absensi</span></h2>
               <button 
                 onClick={() => setShowPassword(!showPassword)} 
                 className={cn(
-                  "p-2.5 rounded-xl transition-all duration-300",
+                  "p-2 rounded-xl transition-all duration-300",
                   showPassword ? "bg-brand-500 text-white shadow-lg shadow-brand-500/30" : "bg-white text-slate-400 border border-slate-100"
                 )}
               >
-                <Filter className="w-5 h-5" />
+                <Filter className="w-4 h-4" />
               </button>
             </div>
 
@@ -770,66 +775,66 @@ export default function App() {
                   initial={{ opacity: 0, height: 0 }} 
                   animate={{ opacity: 1, height: 'auto' }} 
                   exit={{ opacity: 0, height: 0 }}
-                  className="glass p-6 rounded-[2.5rem] space-y-4 overflow-hidden"
+                  className="glass p-4 rounded-xl space-y-3 overflow-hidden"
                 >
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">Mulai Tanggal</label>
-                      <input type="date" className="w-full text-sm p-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all" value={historyFilter.start} onChange={e => setHistoryFilter({...historyFilter, start: e.target.value})} />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-[8px] font-bold uppercase tracking-widest text-slate-400 ml-1">Mulai Tanggal</label>
+                      <input type="date" className="w-full text-xs p-2.5 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all" value={historyFilter.start} onChange={e => setHistoryFilter({...historyFilter, start: e.target.value})} />
                     </div>
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">Sampai Tanggal</label>
-                      <input type="date" className="w-full text-sm p-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all" value={historyFilter.end} onChange={e => setHistoryFilter({...historyFilter, end: e.target.value})} />
+                    <div className="space-y-1">
+                      <label className="text-[8px] font-bold uppercase tracking-widest text-slate-400 ml-1">Sampai Tanggal</label>
+                      <input type="date" className="w-full text-xs p-2.5 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all" value={historyFilter.end} onChange={e => setHistoryFilter({...historyFilter, end: e.target.value})} />
                     </div>
                   </div>
-                  <button onClick={fetchHistory} className="w-full py-3 btn-primary rounded-2xl text-xs font-bold uppercase tracking-widest">Terapkan Filter</button>
+                  <button onClick={fetchHistory} className="w-full py-2.5 btn-primary rounded-xl text-[9px] font-bold uppercase tracking-widest">Terapkan Filter</button>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            <div className="space-y-4">
+            <div className="space-y-2.5">
               {history.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <History className="w-8 h-8 text-slate-200" />
+                <div className="text-center py-8">
+                  <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <History className="w-6 h-6 text-slate-200" />
                   </div>
-                  <p className="text-slate-400 text-sm font-medium">Belum ada riwayat absensi</p>
+                  <p className="text-slate-400 text-xs font-medium">Belum ada riwayat absensi</p>
                 </div>
               ) : history.map((record) => (
                 <motion.div 
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   key={record.id} 
-                  className="glass p-4 rounded-[2rem] flex items-center gap-4 card-hover"
+                  className="glass p-3 rounded-xl flex items-center gap-3 card-hover"
                 >
                   <div className="relative">
-                    <img src={record.photo} className="w-16 h-16 rounded-2xl object-cover shadow-md" referrerPolicy="no-referrer" />
+                    <img src={record.photo} className="w-12 h-12 rounded-xl object-cover shadow-md" referrerPolicy="no-referrer" />
                     <div className={cn(
-                      "absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-2 border-white flex items-center justify-center shadow-sm",
+                      "absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full border-2 border-white flex items-center justify-center shadow-sm",
                       record.type === 'in' ? "bg-emerald-500" : "bg-brand-500"
                     )}>
-                      {record.type === 'in' ? <CheckCircle2 className="w-3 h-3 text-white" /> : <LogOut className="w-3 h-3 text-white" />}
+                      {record.type === 'in' ? <CheckCircle2 className="w-2.5 h-2.5 text-white" /> : <LogOut className="w-2.5 h-2.5 text-white" />}
                     </div>
                   </div>
                   <div className="flex-1">
-                    <div className="flex justify-between items-start mb-1">
-                      <p className="font-extrabold text-slate-900 text-sm">{record.type === 'in' ? 'Check In' : 'Check Out'}</p>
-                      <p className="text-[10px] text-slate-400 font-mono font-bold">{format(parseDate(record.timestamp), 'dd MMM, HH:mm')}</p>
+                    <div className="flex justify-between items-start mb-0.5">
+                      <p className="font-extrabold text-slate-900 text-xs">{record.type === 'in' ? 'Check In' : 'Check Out'}</p>
+                      <p className="text-[9px] text-slate-400 font-mono font-bold">{format(parseDate(record.timestamp), 'dd MMM, HH:mm')}</p>
                     </div>
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-1.5">
                       {record.is_late ? (
-                        <span className="text-[9px] px-2.5 py-1 bg-red-50 text-red-600 rounded-full font-bold uppercase tracking-wide border border-red-100">Terlambat {record.late_minutes}m</span>
+                        <span className="text-[7px] px-2 py-0.5 bg-red-50 text-red-600 rounded-full font-bold uppercase tracking-wide border border-red-100">Terlambat {record.late_minutes}m</span>
                       ) : (
-                        <span className="text-[9px] px-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-full font-bold uppercase tracking-wide border border-emerald-100">Tepat Waktu</span>
+                        <span className="text-[7px] px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-full font-bold uppercase tracking-wide border border-emerald-100">Tepat Waktu</span>
                       )}
                       {record.type === 'in' && record.scheduled_out_time && (
-                        <span className="text-[9px] px-2.5 py-1 bg-brand-50 text-brand-600 rounded-full font-bold uppercase tracking-wide border border-brand-100">
-                          Bisa pulang {format(parseDate(record.scheduled_out_time), 'HH:mm')}
+                        <span className="text-[7px] px-2 py-0.5 bg-brand-50 text-brand-600 rounded-full font-bold uppercase tracking-wide border border-brand-100">
+                          Pulang {format(parseDate(record.scheduled_out_time), 'HH:mm')}
                         </span>
                       )}
                       {record.work_mode && (
                         <span className={cn(
-                          "text-[9px] px-2.5 py-1 rounded-full font-bold uppercase tracking-wide border",
+                          "text-[7px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide border",
                           record.work_mode === 'WFO' ? "bg-slate-50 text-slate-600 border-slate-100" : "bg-blue-50 text-blue-600 border-blue-100"
                         )}>
                           {record.work_mode}
@@ -844,37 +849,37 @@ export default function App() {
         )}
 
         {activeTab === 'admin-dash' && (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">Aktivitas <span className="text-brand-600">Hari Ini</span></h2>
-            <div className="space-y-3">
+          <div className="space-y-4">
+            <h2 className="text-lg font-extrabold tracking-tight text-slate-900">Aktivitas <span className="text-brand-600">Hari Ini</span></h2>
+            <div className="space-y-2">
               {adminToday.length === 0 ? (
-                <div className="text-center py-12 glass rounded-[2.5rem]">
-                  <p className="text-slate-400 text-sm font-medium">Belum ada aktivitas hari ini</p>
+                <div className="text-center py-8 glass rounded-xl">
+                  <p className="text-slate-400 text-xs font-medium">Belum ada aktivitas hari ini</p>
                 </div>
               ) : adminToday.map((record) => (
                 <motion.div 
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   key={record.id} 
-                  className="glass p-4 rounded-[2rem] flex items-center gap-4 card-hover"
+                  className="glass p-3 rounded-xl flex items-center gap-3 card-hover"
                 >
                   <div className={cn(
-                    "w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm", 
+                    "w-9 h-9 rounded-xl flex items-center justify-center shadow-sm", 
                     record.type === 'in' ? "bg-emerald-50 text-emerald-500 border border-emerald-100" : "bg-brand-50 text-brand-500 border border-brand-100"
                   )}>
-                    {record.type === 'in' ? <CheckCircle2 className="w-6 h-6" /> : <LogOut className="w-6 h-6" />}
+                    {record.type === 'in' ? <CheckCircle2 className="w-5 h-5" /> : <LogOut className="w-5 h-5" />}
                   </div>
                   <div className="flex-1">
-                    <p className="font-extrabold text-slate-900 text-sm">{record.display_name}</p>
-                    <div className="flex items-center gap-2">
-                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                    <p className="font-extrabold text-slate-900 text-xs">{record.display_name}</p>
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">
                         {record.type === 'in' ? 'Clock In' : 'Clock Out'} • {format(parseDate(record.timestamp), 'HH:mm')}
                         {record.work_mode && ` • ${record.work_mode}`}
                       </p>
-                      {record.is_late === 1 && <span className="text-[8px] px-2 py-0.5 bg-red-50 text-red-500 rounded-full font-bold uppercase tracking-widest border border-red-100">Terlambat</span>}
+                      {record.is_late === 1 && <span className="text-[7px] px-1.5 py-0.5 bg-red-50 text-red-500 rounded-full font-bold uppercase tracking-widest border border-red-100">Terlambat</span>}
                     </div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-slate-300" />
+                  <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
                 </motion.div>
               ))}
             </div>
@@ -882,43 +887,43 @@ export default function App() {
         )}
 
         {activeTab === 'admin-users' && (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">Kelola <span className="text-brand-600">Pegawai</span></h2>
-            <div className="space-y-4">
+          <div className="space-y-4">
+            <h2 className="text-lg font-extrabold tracking-tight text-slate-900">Kelola <span className="text-brand-600">Pegawai</span></h2>
+            <div className="space-y-3">
               {adminUsers.map((u) => (
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   key={u.id} 
-                  className="glass p-6 rounded-[2.5rem] space-y-5 card-hover"
+                  className="glass p-4 rounded-xl space-y-3 card-hover"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center border border-slate-100">
-                        <User className="w-6 h-6 text-slate-400" />
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100">
+                        <User className="w-5 h-5 text-slate-400" />
                       </div>
                       <div>
-                        <p className="font-extrabold text-slate-900 text-sm">{u.display_name}</p>
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.15em]">{u.role}</p>
+                        <p className="font-extrabold text-slate-900 text-xs">{u.display_name}</p>
+                        <p className="text-[9px] text-slate-400 font-bold uppercase tracking-[0.15em]">{u.role}</p>
                       </div>
                     </div>
                     <button 
                       onClick={() => toggleUserStatus(u.id, u.is_active)}
                       className={cn(
-                        "px-4 py-2 rounded-2xl flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-all duration-300 shadow-sm",
+                        "px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest transition-all duration-300 shadow-sm",
                         u.is_active ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-red-50 text-red-600 border border-red-100"
                       )}
                     >
-                      {u.is_active ? <Power className="w-4 h-4" /> : <PowerOff className="w-4 h-4" />}
+                      {u.is_active ? <Power className="w-3.5 h-3.5" /> : <PowerOff className="w-3.5 h-3.5" />}
                       {u.is_active ? "Aktif" : "Cuti"}
                     </button>
                   </div>
-                  <div className="flex gap-3">
+                  <div className="flex gap-2">
                     <button 
                       onClick={() => resetUserPassword(u.id)}
-                      className="flex-1 py-3 bg-slate-50 text-slate-600 hover:bg-slate-100 rounded-2xl text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-colors border border-slate-100"
+                      className="flex-1 py-2 bg-slate-50 text-slate-600 hover:bg-slate-100 rounded-xl text-[9px] font-bold uppercase tracking-widest flex items-center justify-center gap-1.5 transition-colors border border-slate-100"
                     >
-                      <RotateCcw className="w-3.5 h-3.5" /> Reset Password
+                      <RotateCcw className="w-3 h-3" /> Reset Password
                     </button>
                   </div>
                 </motion.div>
@@ -928,27 +933,27 @@ export default function App() {
         )}
 
         {activeTab === 'admin-filter' && (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">Laporan <span className="text-brand-600">Absensi</span></h2>
-            <div className="glass p-8 rounded-[3rem] space-y-6 shadow-xl shadow-slate-200/50">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 ml-1">Dari Tanggal</label>
-                  <input type="date" className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all" value={adminFilter.start} onChange={e => setAdminFilter({...adminFilter, start: e.target.value})} />
+          <div className="space-y-4">
+            <h2 className="text-lg font-extrabold tracking-tight text-slate-900">Laporan <span className="text-brand-600">Absensi</span></h2>
+            <div className="glass p-5 rounded-2xl space-y-4 shadow-xl shadow-slate-200/50">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[8px] font-bold uppercase tracking-[0.15em] text-slate-400 ml-1">Dari Tanggal</label>
+                  <input type="date" className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl text-xs outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all" value={adminFilter.start} onChange={e => setAdminFilter({...adminFilter, start: e.target.value})} />
                 </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 ml-1">Sampai Tanggal</label>
-                  <input type="date" className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all" value={adminFilter.end} onChange={e => setAdminFilter({...adminFilter, end: e.target.value})} />
+                <div className="space-y-1">
+                  <label className="text-[8px] font-bold uppercase tracking-[0.15em] text-slate-400 ml-1">Sampai Tanggal</label>
+                  <input type="date" className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl text-xs outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all" value={adminFilter.end} onChange={e => setAdminFilter({...adminFilter, end: e.target.value})} />
                 </div>
               </div>
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 ml-1">Pilih Pegawai</label>
-                <select className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all appearance-none" value={adminFilter.userId} onChange={e => setAdminFilter({...adminFilter, userId: e.target.value})}>
+              <div className="space-y-1">
+                <label className="text-[8px] font-bold uppercase tracking-[0.15em] text-slate-400 ml-1">Pilih Pegawai</label>
+                <select className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl text-xs outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all appearance-none" value={adminFilter.userId} onChange={e => setAdminFilter({...adminFilter, userId: e.target.value})}>
                   <option value="">Semua Pegawai</option>
                   {adminUsers.map(u => <option key={u.id} value={u.id}>{u.display_name}</option>)}
                 </select>
               </div>
-              <button onClick={fetchExportData} className="w-full py-5 btn-primary rounded-2xl font-bold text-sm tracking-wide">Tampilkan Data</button>
+              <button onClick={fetchExportData} className="w-full py-3.5 btn-primary rounded-xl font-bold text-xs tracking-wide">Tampilkan Data</button>
             </div>
 
             <AnimatePresence>
@@ -956,36 +961,36 @@ export default function App() {
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="space-y-4"
+                  className="space-y-3"
                 >
-                  <div className="flex justify-between items-center px-2">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">{exportDataList.length} Data Ditemukan</p>
-                    <button onClick={exportToExcel} className="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest border border-emerald-100 hover:bg-emerald-100 transition-colors shadow-sm">
-                      <Download className="w-4 h-4" /> Export Excel
+                  <div className="flex justify-between items-center px-1">
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">{exportDataList.length} Data</p>
+                    <button onClick={exportToExcel} className="px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-xl flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest border border-emerald-100 hover:bg-emerald-100 transition-colors shadow-sm">
+                      <Download className="w-3.5 h-3.5" /> Export Excel
                     </button>
                   </div>
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     {exportDataList.slice(0, 10).map((r, i) => (
                       <motion.div 
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.05 }}
                         key={i} 
-                        className="glass p-4 rounded-[2rem] text-[11px] flex justify-between items-center card-hover"
+                        className="glass p-3 rounded-xl text-[10px] flex justify-between items-center card-hover"
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100">
-                            <User className="w-5 h-5 text-slate-300" />
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center border border-slate-100">
+                            <User className="w-4 h-4 text-slate-300" />
                           </div>
                           <div>
-                            <p className="font-extrabold text-slate-900">{r.display_name}</p>
-                            <p className="text-slate-400 font-medium">
+                            <p className="font-extrabold text-slate-900 text-xs">{r.display_name}</p>
+                            <p className="text-slate-400 font-medium text-[9px]">
                               {format(parseDate(r.timestamp), 'dd MMM yyyy')} • {format(parseDate(r.timestamp), 'HH:mm')}
                             </p>
                           </div>
                         </div>
                         <span className={cn(
-                          "px-3 py-1 rounded-full font-bold uppercase tracking-widest text-[8px] border", 
+                          "px-2 py-0.5 rounded-full font-bold uppercase tracking-widest text-[7px] border", 
                           r.type === 'in' ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-brand-50 text-brand-600 border-brand-100"
                         )}>
                           {r.type === 'in' ? 'Clock In' : 'Clock Out'}
@@ -993,7 +998,7 @@ export default function App() {
                       </motion.div>
                     ))}
                     {exportDataList.length > 10 && (
-                      <p className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest py-4">...dan {exportDataList.length - 10} data lainnya</p>
+                      <p className="text-center text-[9px] text-slate-400 font-bold uppercase tracking-widest py-3">...dan {exportDataList.length - 10} data lainnya</p>
                     )}
                   </div>
                 </motion.div>
@@ -1003,77 +1008,77 @@ export default function App() {
         )}
 
         {activeTab === 'profile' && (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">Profil <span className="text-brand-600">Saya</span></h2>
-            <div className="glass p-8 rounded-[3rem] space-y-8 shadow-xl shadow-slate-200/50">
-              <div className="flex items-center gap-6 pb-8 border-b border-slate-100/50">
+          <div className="space-y-4">
+            <h2 className="text-lg font-extrabold tracking-tight text-slate-900">Profil <span className="text-brand-600">Saya</span></h2>
+            <div className="glass p-5 rounded-2xl space-y-5 shadow-xl shadow-slate-200/50">
+              <div className="flex items-center gap-4 pb-5 border-b border-slate-100/50">
                 <div className="relative">
-                  <div className="w-20 h-20 rounded-[2rem] bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-500/30">
-                    <User className="w-10 h-10 text-white" />
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-500/30">
+                    <User className="w-7 h-7 text-white" />
                   </div>
-                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 rounded-full border-4 border-white shadow-sm" />
+                  <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-emerald-500 rounded-full border-3 border-white shadow-sm" />
                 </div>
                 <div>
-                  <p className="font-extrabold text-xl text-slate-900 leading-tight">{user.display_name}</p>
-                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-[0.2em] mt-1">{user.role}</p>
+                  <p className="font-extrabold text-base text-slate-900 leading-tight">{user.display_name}</p>
+                  <p className="text-[9px] text-slate-400 uppercase font-bold tracking-[0.2em] mt-0.5">{user.role}</p>
                 </div>
               </div>
 
-              <form onSubmit={handleChangePassword} className="space-y-6">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 rounded-xl bg-brand-50 flex items-center justify-center">
-                    <KeyRound className="w-4 h-4 text-brand-600" />
+              <form onSubmit={handleChangePassword} className="space-y-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-7 h-7 rounded-lg bg-brand-50 flex items-center justify-center">
+                    <KeyRound className="w-3.5 h-3.5 text-brand-600" />
                   </div>
-                  <h3 className="text-sm font-extrabold text-slate-900 tracking-tight">Ganti Password</h3>
+                  <h3 className="text-xs font-extrabold text-slate-900 tracking-tight">Ganti Password</h3>
                 </div>
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <PasswordInput label="Password Lama" value={changePassData.old} onChange={(v: string) => setChangePassData({...changePassData, old: v})} placeholder="Masukkan password lama" />
                   <PasswordInput label="Password Baru" value={changePassData.new} onChange={(v: string) => setChangePassData({...changePassData, new: v})} placeholder="Masukkan password baru" />
                   <PasswordInput label="Konfirmasi Password Baru" value={changePassData.confirm} onChange={(v: string) => setChangePassData({...changePassData, confirm: v})} placeholder="Ulangi password baru" />
                 </div>
-                <button type="submit" className="w-full py-5 btn-primary rounded-[2rem] font-bold text-sm tracking-wide shadow-xl shadow-brand-500/20">Simpan Password Baru</button>
+                <button type="submit" className="w-full py-3.5 btn-primary rounded-xl font-bold text-xs tracking-wide shadow-xl shadow-brand-500/20">Simpan Password Baru</button>
               </form>
             </div>
           </div>
         )}
       </main>
 
-      {/* Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto glass rounded-t-[2.5rem] px-8 py-5 flex justify-around items-center z-40 shadow-[0_-8px_32px_rgba(0,0,0,0.05)]">
+      {/* Navigation - Compact */}
+      <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto glass rounded-t-2xl px-6 py-2.5 flex justify-around items-center z-40 shadow-[0_-8px_32px_rgba(0,0,0,0.05)]">
         {user.role === 'admin' ? (
           <>
-            <button onClick={() => setActiveTab('admin-dash')} className={cn("flex flex-col items-center gap-1.5 transition-all duration-300", activeTab === 'admin-dash' ? "text-brand-600 scale-110" : "text-slate-400 hover:text-slate-600")}>
-              <div className={cn("p-2 rounded-xl transition-colors", activeTab === 'admin-dash' ? "bg-brand-50" : "bg-transparent")}>
-                <LayoutDashboard className="w-6 h-6" />
+            <button onClick={() => setActiveTab('admin-dash')} className={cn("flex flex-col items-center gap-1 transition-all duration-300", activeTab === 'admin-dash' ? "text-brand-600 scale-110" : "text-slate-400 hover:text-slate-600")}>
+              <div className={cn("p-1.5 rounded-lg transition-colors", activeTab === 'admin-dash' ? "bg-brand-50" : "bg-transparent")}>
+                <LayoutDashboard className="w-5 h-5" />
               </div>
-              <span className="text-[8px] font-bold uppercase tracking-[0.15em]">Dashboard</span>
+              <span className="text-[7px] font-bold uppercase tracking-[0.15em]">Dashboard</span>
             </button>
-            <button onClick={() => setActiveTab('admin-filter')} className={cn("flex flex-col items-center gap-1.5 transition-all duration-300", activeTab === 'admin-filter' ? "text-brand-600 scale-110" : "text-slate-400 hover:text-slate-600")}>
-              <div className={cn("p-2 rounded-xl transition-colors", activeTab === 'admin-filter' ? "bg-brand-50" : "bg-transparent")}>
-                <Filter className="w-6 h-6" />
+            <button onClick={() => setActiveTab('admin-filter')} className={cn("flex flex-col items-center gap-1 transition-all duration-300", activeTab === 'admin-filter' ? "text-brand-600 scale-110" : "text-slate-400 hover:text-slate-600")}>
+              <div className={cn("p-1.5 rounded-lg transition-colors", activeTab === 'admin-filter' ? "bg-brand-50" : "bg-transparent")}>
+                <Filter className="w-5 h-5" />
               </div>
-              <span className="text-[8px] font-bold uppercase tracking-[0.15em]">Laporan</span>
+              <span className="text-[7px] font-bold uppercase tracking-[0.15em]">Laporan</span>
             </button>
-            <button onClick={() => setActiveTab('admin-users')} className={cn("flex flex-col items-center gap-1.5 transition-all duration-300", activeTab === 'admin-users' ? "text-brand-600 scale-110" : "text-slate-400 hover:text-slate-600")}>
-              <div className={cn("p-2 rounded-xl transition-colors", activeTab === 'admin-users' ? "bg-brand-50" : "bg-transparent")}>
-                <Users className="w-6 h-6" />
+            <button onClick={() => setActiveTab('admin-users')} className={cn("flex flex-col items-center gap-1 transition-all duration-300", activeTab === 'admin-users' ? "text-brand-600 scale-110" : "text-slate-400 hover:text-slate-600")}>
+              <div className={cn("p-1.5 rounded-lg transition-colors", activeTab === 'admin-users' ? "bg-brand-50" : "bg-transparent")}>
+                <Users className="w-5 h-5" />
               </div>
-              <span className="text-[8px] font-bold uppercase tracking-[0.15em]">Pegawai</span>
+              <span className="text-[7px] font-bold uppercase tracking-[0.15em]">Pegawai</span>
             </button>
           </>
         ) : (
           <>
-            <button onClick={() => setActiveTab('home')} className={cn("flex flex-col items-center gap-1.5 transition-all duration-300", activeTab === 'home' ? "text-brand-600 scale-110" : "text-slate-400 hover:text-slate-600")}>
-              <div className={cn("p-2 rounded-xl transition-colors", activeTab === 'home' ? "bg-brand-50" : "bg-transparent")}>
-                <CalendarIcon className="w-6 h-6" />
+            <button onClick={() => setActiveTab('home')} className={cn("flex flex-col items-center gap-1 transition-all duration-300", activeTab === 'home' ? "text-brand-600 scale-110" : "text-slate-400 hover:text-slate-600")}>
+              <div className={cn("p-1.5 rounded-lg transition-colors", activeTab === 'home' ? "bg-brand-50" : "bg-transparent")}>
+                <CalendarIcon className="w-5 h-5" />
               </div>
-              <span className="text-[8px] font-bold uppercase tracking-[0.15em]">Absen</span>
+              <span className="text-[7px] font-bold uppercase tracking-[0.15em]">Absen</span>
             </button>
-            <button onClick={() => setActiveTab('history')} className={cn("flex flex-col items-center gap-1.5 transition-all duration-300", activeTab === 'history' ? "text-brand-600 scale-110" : "text-slate-400 hover:text-slate-600")}>
-              <div className={cn("p-2 rounded-xl transition-colors", activeTab === 'history' ? "bg-brand-50" : "bg-transparent")}>
-                <History className="w-6 h-6" />
+            <button onClick={() => setActiveTab('history')} className={cn("flex flex-col items-center gap-1 transition-all duration-300", activeTab === 'history' ? "text-brand-600 scale-110" : "text-slate-400 hover:text-slate-600")}>
+              <div className={cn("p-1.5 rounded-lg transition-colors", activeTab === 'history' ? "bg-brand-50" : "bg-transparent")}>
+                <History className="w-5 h-5" />
               </div>
-              <span className="text-[8px] font-bold uppercase tracking-[0.15em]">Riwayat</span>
+              <span className="text-[7px] font-bold uppercase tracking-[0.15em]">Riwayat</span>
             </button>
           </>
         )}
@@ -1081,7 +1086,7 @@ export default function App() {
 
       <LoadingOverlay loading={loading} />
 
-      {/* Camera Modal */}
+      {/* Camera Modal - Compact */}
       <AnimatePresence>
         {isCameraOpen && (
           <motion.div 
@@ -1107,20 +1112,20 @@ export default function App() {
               />
               {/* Face Frame Overlay */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="w-72 h-96 border-2 border-white/30 rounded-[4rem] relative">
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-brand-500 text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Posisikan Wajah</div>
+                <div className="w-64 h-80 border-2 border-white/30 rounded-[3rem] relative">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-brand-500 text-white px-3 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest">Posisikan Wajah</div>
                   {/* Corner Accents */}
-                  <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-brand-500 rounded-tl-3xl" />
-                  <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-brand-500 rounded-tr-3xl" />
-                  <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-brand-500 rounded-bl-3xl" />
-                  <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-brand-500 rounded-br-3xl" />
+                  <div className="absolute top-0 left-0 w-7 h-7 border-t-4 border-l-4 border-brand-500 rounded-tl-2xl" />
+                  <div className="absolute top-0 right-0 w-7 h-7 border-t-4 border-r-4 border-brand-500 rounded-tr-2xl" />
+                  <div className="absolute bottom-0 left-0 w-7 h-7 border-b-4 border-l-4 border-brand-500 rounded-bl-2xl" />
+                  <div className="absolute bottom-0 right-0 w-7 h-7 border-b-4 border-r-4 border-brand-500 rounded-br-2xl" />
                 </div>
               </div>
             </div>
-            <div className="p-10 glass-dark flex flex-col items-center gap-8 rounded-t-[3rem] -mt-12 relative z-10">
+            <div className="p-8 glass-dark flex flex-col items-center gap-5 rounded-t-2xl -mt-8 relative z-10">
               <div className="text-center">
-                <p className="text-white font-extrabold text-xl mb-1 tracking-tight">Verifikasi Wajah</p>
-                <p className="text-slate-400 text-xs font-medium">Pastikan pencahayaan cukup dan wajah terlihat jelas</p>
+                <p className="text-white font-extrabold text-base mb-0.5 tracking-tight">Verifikasi Wajah</p>
+                <p className="text-slate-400 text-[10px] font-medium">Pastikan pencahayaan cukup dan wajah terlihat jelas</p>
               </div>
 
               <AnimatePresence>
@@ -1130,7 +1135,7 @@ export default function App() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     className={cn(
-                      "px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider text-center",
+                      "px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-wider text-center",
                       cameraMessage.type === 'error' ? "bg-red-500/20 text-red-400 border border-red-500/30" : "bg-brand-500/20 text-brand-400 border border-brand-500/30"
                     )}
                   >
@@ -1139,13 +1144,13 @@ export default function App() {
                 )}
               </AnimatePresence>
 
-              <div className="w-full max-w-[200px] space-y-2">
-                <label className="block text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 text-center">Mode Kerja {getJakartaDate().getDay() === 5 ? '(Jumat)' : ''}</label>
-                <div className="flex bg-slate-800 p-1 rounded-2xl border border-slate-700">
+              <div className="w-full max-w-[180px] space-y-1.5">
+                <label className="block text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400 text-center">Mode Kerja {getJakartaDate().getDay() === 5 ? '(Jumat)' : ''}</label>
+                <div className="flex bg-slate-800 p-1 rounded-xl border border-slate-700">
                   <button 
                     onClick={() => setWorkMode('WFO')}
                     className={cn(
-                      "flex-1 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all",
+                      "flex-1 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-widest transition-all",
                       workMode === 'WFO' ? "bg-brand-500 text-white shadow-lg shadow-brand-500/30" : "text-slate-400 hover:text-white"
                     )}
                   >
@@ -1162,7 +1167,7 @@ export default function App() {
                       }
                     }}
                     className={cn(
-                      "flex-1 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all",
+                      "flex-1 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-widest transition-all",
                       workMode === 'WFH' ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30" : "text-slate-400 hover:text-white",
                       getJakartaDate().getDay() !== 5 && "opacity-30 cursor-not-allowed"
                     )}
@@ -1172,26 +1177,26 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-10">
+              <div className="flex items-center gap-8">
                 <motion.button 
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setIsCameraOpen(false)} 
-                  className="w-14 h-14 rounded-2xl bg-slate-800 flex items-center justify-center text-white border border-slate-700 hover:bg-slate-700 transition-colors"
+                  className="w-12 h-12 rounded-xl bg-slate-800 flex items-center justify-center text-white border border-slate-700 hover:bg-slate-700 transition-colors"
                 >
-                  <AlertCircle className="w-6 h-6" />
+                  <AlertCircle className="w-5 h-5" />
                 </motion.button>
                 <motion.button 
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   disabled={loading} 
                   onClick={handleAttendance} 
-                  className="w-24 h-24 rounded-full bg-white p-1 shadow-[0_0_40px_rgba(255,255,255,0.3)] disabled:opacity-50"
+                  className="w-20 h-20 rounded-full bg-white p-1 shadow-[0_0_40px_rgba(255,255,255,0.3)] disabled:opacity-50"
                 >
-                  <div className="w-full h-full rounded-full border-[6px] border-slate-900 flex items-center justify-center">
-                    <div className="w-12 h-12 rounded-full bg-brand-600 animate-pulse" />
+                  <div className="w-full h-full rounded-full border-[5px] border-slate-900 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-brand-600 animate-pulse" />
                   </div>
                 </motion.button>
-                <div className="w-14 h-14" />
+                <div className="w-12 h-12" />
               </div>
             </div>
           </motion.div>
