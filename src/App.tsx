@@ -653,7 +653,7 @@ export default function App() {
                 </div>
                 <div className="text-6xl font-extrabold tracking-tighter mb-6 font-mono">{format(currentTime, 'HH:mm:ss')}</div>
                 <div className="flex gap-4">
-                  <div className="flex-1 bg-white/5 rounded-2xl p-4 border border-white/10 backdrop-blur-md">
+                  <div className="flex-1 bg-white/5 rounded-2xl p-3 border border-white/10 backdrop-blur-md">
                     <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-1">Clock In Schedule</p>
                     <p className="text-lg font-bold">{schedule?.start || '--:--'}</p>
                   </div>
