@@ -627,41 +627,41 @@ export default function App() {
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto p-4 pb-24">
+      <main className="flex-1 overflow-y-auto p-4 pb-28">
         {activeTab === 'home' && (
-          <div className="flex flex-col h-full justify-between gap-4">
+          <div className="flex flex-col h-full justify-between gap-3">
             <div>
               {error && (
                 <motion.div 
                   initial={{ opacity: 0, y: -10 }} 
                   animate={{ opacity: 1, y: 0 }} 
-                  className="bg-red-50 border border-red-100 p-2.5 rounded-xl flex items-center gap-2 mb-3"
+                  className="bg-red-50 border border-red-100 p-2 rounded-xl flex items-center gap-2 mb-2"
                 >
                   <AlertCircle className="w-4 h-4 text-red-500" />
                   <p className="text-[10px] font-bold text-red-600 uppercase tracking-wider">{error}</p>
                 </motion.div>
               )}
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
-                  className="glass-dark text-white p-6 rounded-[2.5rem] shadow-2xl shadow-slate-900/20 relative overflow-hidden"
+                  className="glass-dark text-white p-5 rounded-[2.5rem] shadow-2xl shadow-slate-900/20 relative overflow-hidden"
                 >
                   <div className="relative z-10">
                     <div className="flex items-center gap-2 mb-1 opacity-60">
-                      <Clock className="w-3.5 h-3.5" />
+                      <Clock className="w-3 h-3" />
                       <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Current Time</span>
                     </div>
-                    <div className="text-5xl font-extrabold tracking-tighter mb-4 font-mono">{format(currentTime, 'HH:mm:ss')}</div>
+                    <div className="text-4xl font-extrabold tracking-tighter mb-3 font-mono">{format(currentTime, 'HH:mm:ss')}</div>
                     <div className="flex gap-3">
-                      <div className="flex-1 bg-white/5 rounded-2xl p-3.5 border border-white/10 backdrop-blur-md">
-                        <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 mb-1">In Schedule</p>
-                        <p className="text-base font-bold">{schedule?.start || '--:--'}</p>
+                      <div className="flex-1 bg-white/5 rounded-2xl p-3 border border-white/10 backdrop-blur-md">
+                        <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">In Schedule</p>
+                        <p className="text-sm font-bold">{schedule?.start || '--:--'}</p>
                       </div>
-                      <div className="flex-1 bg-white/5 rounded-2xl p-3.5 border border-white/10 backdrop-blur-md">
-                        <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 mb-1">Out Schedule</p>
-                        <p className="text-base font-bold">{checkIn?.scheduled_out_time ? format(parseDate(checkIn.scheduled_out_time), 'HH:mm') : schedule?.end || '--:--'}</p>
+                      <div className="flex-1 bg-white/5 rounded-2xl p-3 border border-white/10 backdrop-blur-md">
+                        <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Out Schedule</p>
+                        <p className="text-sm font-bold">{checkIn?.scheduled_out_time ? format(parseDate(checkIn.scheduled_out_time), 'HH:mm') : schedule?.end || '--:--'}</p>
                       </div>
                     </div>
                   </div>
@@ -670,25 +670,25 @@ export default function App() {
                   <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-emerald-500/20 rounded-full blur-[60px]" />
                 </motion.div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3">
                   <motion.div 
                     whileHover={{ scale: 1.02 }}
                     className={cn(
-                      "p-5 rounded-[2rem] border transition-all duration-500 card-hover", 
+                      "p-4 rounded-[2rem] border transition-all duration-500 card-hover", 
                       checkIn ? "bg-emerald-50/50 border-emerald-100 shadow-lg shadow-emerald-500/5" : "bg-white border-slate-100"
                     )}
                   >
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center transition-colors", checkIn ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30" : "bg-slate-50 text-slate-300")}>
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <div className={cn("w-7 h-7 rounded-xl flex items-center justify-center transition-colors", checkIn ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30" : "bg-slate-50 text-slate-300")}>
                         <CheckCircle2 className="w-4 h-4" />
                       </div>
                       <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Clock In</span>
                     </div>
-                    <p className="text-xl font-extrabold text-slate-900">{checkIn ? format(parseDate(checkIn.timestamp), 'HH:mm') : '--:--'}</p>
+                    <p className="text-lg font-extrabold text-slate-900">{checkIn ? format(parseDate(checkIn.timestamp), 'HH:mm') : '--:--'}</p>
                     {checkIn?.is_late ? (
                       <div className="flex items-center gap-1 mt-1 text-red-500">
                         <AlertCircle className="w-3 h-3" />
-                        <p className="text-[8px] font-bold uppercase">Lemp {checkIn.late_minutes}m</p>
+                        <p className="text-[8px] font-bold uppercase">Terlambat {checkIn.late_minutes}m</p>
                       </div>
                     ) : checkIn && (
                       <p className="text-[8px] text-emerald-600 font-bold mt-1 uppercase tracking-wide">Tepat Waktu</p>
@@ -698,34 +698,34 @@ export default function App() {
                   <motion.div 
                     whileHover={{ scale: 1.02 }}
                     className={cn(
-                      "p-5 rounded-[2rem] border transition-all duration-500 card-hover", 
+                      "p-4 rounded-[2rem] border transition-all duration-500 card-hover", 
                       checkOut ? "bg-brand-50/50 border-brand-100 shadow-lg shadow-brand-500/5" : "bg-white border-slate-100"
                     )}
                   >
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center transition-colors", checkOut ? "bg-brand-500 text-white shadow-lg shadow-brand-500/30" : "bg-slate-50 text-slate-300")}>
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <div className={cn("w-7 h-7 rounded-xl flex items-center justify-center transition-colors", checkOut ? "bg-brand-500 text-white shadow-lg shadow-brand-500/30" : "bg-slate-50 text-slate-300")}>
                         <LogOut className="w-4 h-4" />
                       </div>
                       <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Clock Out</span>
                     </div>
-                    <p className="text-xl font-extrabold text-slate-900">{checkOut ? format(parseDate(checkOut.timestamp), 'HH:mm') : '--:--'}</p>
+                    <p className="text-lg font-extrabold text-slate-900">{checkOut ? format(parseDate(checkOut.timestamp), 'HH:mm') : '--:--'}</p>
                     {checkOut && <p className="text-[8px] text-brand-600 font-bold mt-1 uppercase tracking-wide">Sudah Absen</p>}
                   </motion.div>
                 </div>
 
-                <div className="glass p-4 rounded-[2rem] flex items-center justify-between card-hover">
+                <div className="glass p-3.5 rounded-[2rem] flex items-center justify-between card-hover">
                   <div className="flex items-center gap-4">
-                    <div className="w-11 h-11 rounded-xl bg-slate-50 flex items-center justify-center shadow-inner">
-                      <MapPin className={cn("w-6 h-6", distance !== null && distance <= OFFICE_LOCATION.radius ? "text-emerald-500" : "text-slate-300")} />
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center shadow-inner">
+                      <MapPin className={cn("w-5 h-5", distance !== null && distance <= OFFICE_LOCATION.radius ? "text-emerald-500" : "text-slate-300")} />
                     </div>
                     <div>
                       <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400 mb-0.5">Status Lokasi</p>
-                      <p className={cn("text-sm font-bold", distance !== null && distance <= OFFICE_LOCATION.radius ? "text-slate-900" : "text-red-500")}>
-                        {distance !== null ? (distance <= OFFICE_LOCATION.radius ? "Dalam Jangkauan" : `Luar Jangkauan (${Math.round(distance)}m)`) : "Searching..."}
+                      <p className={cn("text-xs font-bold", distance !== null && distance <= OFFICE_LOCATION.radius ? "text-slate-900" : "text-red-500")}>
+                        {distance !== null ? (distance <= OFFICE_LOCATION.radius ? "Dalam Jangkauan" : `${Math.round(distance)}m`) : "Searching..."}
                       </p>
                     </div>
                   </div>
-                  <button onClick={requestLocation} className="p-2.5 bg-brand-50 text-brand-600 rounded-xl hover:bg-brand-100 transition-colors">
+                  <button onClick={requestLocation} className="p-2 bg-brand-50 text-brand-600 rounded-xl hover:bg-brand-100 transition-colors">
                     <RotateCcw className="w-4 h-4" />
                   </button>
                 </div>
@@ -737,15 +737,16 @@ export default function App() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }} 
                 onClick={() => { requestLocation(); setIsCameraOpen(true); }} 
-                className="w-full py-5 bg-gradient-to-r from-brand-600 to-brand-700 text-white rounded-[2.5rem] font-bold shadow-xl shadow-brand-500/30 flex items-center justify-center gap-3 transition-all group mt-2"
+                className="w-full py-4 bg-gradient-to-r from-brand-600 to-brand-700 text-white rounded-[2rem] font-bold shadow-xl shadow-brand-500/30 flex items-center justify-center gap-3 transition-all group mb-10"
               >
-                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Camera className="w-5 h-5" />
+                <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Camera className="w-4 h-4" />
                 </div>
-                <span className="text-lg tracking-tight">{checkIn ? "Absen Pulang" : "Absen Masuk"}</span>
+                <span className="text-base tracking-tight">{checkIn ? "Absen Pulang" : "Absen Masuk"}</span>
               </motion.button>
             )}
           </div>
+
         )}
 
         {activeTab === 'history' && (
