@@ -599,9 +599,9 @@ export default function App() {
   const checkOut = todayRecords.find(r => r.type === 'out');
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col max-w-md mx-auto shadow-2xl relative overflow-hidden">
-      {/* Header */}
-      <header className="p-6 glass sticky top-0 z-30 flex justify-between items-center border-b-0 rounded-b-[2rem]">
+    <div className="h-screen bg-[#F8FAFC] flex flex-col max-w-md mx-auto shadow-2xl relative overflow-hidden">
+      {/* Header - slightly reduced padding */}
+      <header className="px-5 py-3 glass sticky top-0 z-30 flex justify-between items-center border-b-0 rounded-b-[2rem]">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center p-1 shadow-sm border border-slate-100">
             <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
@@ -627,37 +627,39 @@ export default function App() {
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto p-6 space-y-6 pb-28">
+      {/* Main Content - tighter spacing between sections */}
+      <main className="flex-1 overflow-y-auto px-5 py-3 space-y-3 pb-[70px]">
         {activeTab === 'home' && (
           <>
             {error && (
               <motion.div 
                 initial={{ opacity: 0, y: -10 }} 
                 animate={{ opacity: 1, y: 0 }} 
-                className="bg-red-50 border border-red-100 p-4 rounded-2xl flex items-center gap-3 mb-4"
+                className="bg-red-50 border border-red-100 p-4 rounded-2xl flex items-center gap-3"
               >
                 <AlertCircle className="w-5 h-5 text-red-500" />
                 <p className="text-[10px] font-bold text-red-600 uppercase tracking-wider">{error}</p>
               </motion.div>
             )}
 
+            {/* Clock Section - original sizes, less padding */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }} 
               animate={{ opacity: 1, y: 0 }} 
-              className="glass-dark text-white p-8 rounded-[3rem] shadow-2xl shadow-slate-900/20 relative overflow-hidden"
+              className="glass-dark text-white p-5 rounded-[2.5rem] shadow-2xl shadow-slate-900/20 relative overflow-hidden"
             >
               <div className="relative z-10">
-                <div className="flex items-center gap-2 mb-3 opacity-60">
+                <div className="flex items-center gap-2 mb-2 opacity-60">
                   <Clock className="w-4 h-4" />
                   <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Current Time</span>
                 </div>
-                <div className="text-6xl font-extrabold tracking-tighter mb-6 font-mono">{format(currentTime, 'HH:mm:ss')}</div>
-                <div className="flex gap-4">
+                <div className="text-5xl font-extrabold tracking-tighter mb-3 font-mono">{format(currentTime, 'HH:mm:ss')}</div>
+                <div className="flex gap-3">
                   <div className="flex-1 bg-white/5 rounded-2xl p-3 border border-white/10 backdrop-blur-md">
                     <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-1">Clock In Schedule</p>
                     <p className="text-lg font-bold">{schedule?.start || '--:--'}</p>
                   </div>
-                  <div className="flex-1 bg-white/5 rounded-2xl p-4 border border-white/10 backdrop-blur-md">
+                  <div className="flex-1 bg-white/5 rounded-2xl p-3 border border-white/10 backdrop-blur-md">
                     <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-1">Clock Out Schedule</p>
                     <p className="text-lg font-bold">{checkIn?.scheduled_out_time ? format(parseDate(checkIn.scheduled_out_time), 'HH:mm') : schedule?.end || '--:--'}</p>
                   </div>
@@ -668,15 +670,16 @@ export default function App() {
               <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-emerald-500/20 rounded-full blur-[60px]" />
             </motion.div>
 
-            <div className="grid grid-cols-2 gap-4">
+            {/* Clock In / Clock Out Cards - original sizes, less padding */}
+            <div className="grid grid-cols-2 gap-3">
               <motion.div 
                 whileHover={{ scale: 1.02 }}
                 className={cn(
-                  "p-6 rounded-[2.5rem] border transition-all duration-500 card-hover", 
+                  "p-4 rounded-[2rem] border transition-all duration-500 card-hover", 
                   checkIn ? "bg-emerald-50/50 border-emerald-100 shadow-lg shadow-emerald-500/5" : "bg-white border-slate-100"
                 )}
               >
-                <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center gap-2 mb-2">
                   <div className={cn("w-9 h-9 rounded-2xl flex items-center justify-center transition-colors", checkIn ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30" : "bg-slate-50 text-slate-300")}>
                     <CheckCircle2 className="w-5 h-5" />
                   </div>
@@ -684,15 +687,15 @@ export default function App() {
                 </div>
                 <p className="text-2xl font-extrabold text-slate-900">{checkIn ? format(parseDate(checkIn.timestamp), 'HH:mm') : '--:--'}</p>
                 {checkIn?.is_late ? (
-                  <div className="flex items-center gap-1 mt-2 text-red-500">
+                  <div className="flex items-center gap-1 mt-1.5 text-red-500">
                     <AlertCircle className="w-3 h-3" />
                     <p className="text-[9px] font-bold uppercase">Terlambat {checkIn.late_minutes}m</p>
                   </div>
                 ) : checkIn && (
-                  <p className="text-[9px] text-emerald-600 font-bold mt-2 uppercase tracking-wide">Tepat Waktu</p>
+                  <p className="text-[9px] text-emerald-600 font-bold mt-1.5 uppercase tracking-wide">Tepat Waktu</p>
                 )}
                 {checkIn?.scheduled_out_time && (
-                  <div className="mt-2 pt-2 border-t border-emerald-100/50">
+                  <div className="mt-1.5 pt-1.5 border-t border-emerald-100/50">
                     <p className="text-[8px] text-brand-600 font-bold uppercase tracking-wider">Bisa pulang jam {format(parseDate(checkIn.scheduled_out_time), 'HH:mm')}</p>
                   </div>
                 )}
@@ -701,25 +704,26 @@ export default function App() {
               <motion.div 
                 whileHover={{ scale: 1.02 }}
                 className={cn(
-                  "p-6 rounded-[2.5rem] border transition-all duration-500 card-hover", 
+                  "p-4 rounded-[2rem] border transition-all duration-500 card-hover", 
                   checkOut ? "bg-brand-50/50 border-brand-100 shadow-lg shadow-brand-500/5" : "bg-white border-slate-100"
                 )}
               >
-                <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center gap-2 mb-2">
                   <div className={cn("w-9 h-9 rounded-2xl flex items-center justify-center transition-colors", checkOut ? "bg-brand-500 text-white shadow-lg shadow-brand-500/30" : "bg-slate-50 text-slate-300")}>
                     <LogOut className="w-5 h-5" />
                   </div>
                   <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Clock Out</span>
                 </div>
                 <p className="text-2xl font-extrabold text-slate-900">{checkOut ? format(parseDate(checkOut.timestamp), 'HH:mm') : '--:--'}</p>
-                {checkOut && <p className="text-[9px] text-brand-600 font-bold mt-2 uppercase tracking-wide">Sudah Absen</p>}
+                {checkOut && <p className="text-[9px] text-brand-600 font-bold mt-1.5 uppercase tracking-wide">Sudah Absen</p>}
               </motion.div>
             </div>
 
-            <div className="glass p-6 rounded-[2.5rem] flex items-center justify-between card-hover">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center shadow-inner">
-                  <MapPin className={cn("w-6 h-6", distance !== null && distance <= OFFICE_LOCATION.radius ? "text-emerald-500" : "text-slate-300")} />
+            {/* Location Status - original sizes, less padding */}
+            <div className="glass p-4 rounded-[2rem] flex items-center justify-between card-hover">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-2xl bg-slate-50 flex items-center justify-center shadow-inner">
+                  <MapPin className={cn("w-5 h-5", distance !== null && distance <= OFFICE_LOCATION.radius ? "text-emerald-500" : "text-slate-300")} />
                 </div>
                 <div>
                   <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400 mb-0.5">Status Lokasi</p>
@@ -733,12 +737,13 @@ export default function App() {
               </button>
             </div>
 
+            {/* Attendance Button - original sizes, less padding */}
             {!checkOut && (
               <motion.button 
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }} 
                 onClick={() => { requestLocation(); setIsCameraOpen(true); }} 
-                className="w-full py-6 bg-gradient-to-r from-brand-600 to-brand-700 text-white rounded-[2.5rem] font-bold shadow-xl shadow-brand-500/30 flex items-center justify-center gap-3 transition-all group"
+                className="w-full py-4 bg-gradient-to-r from-brand-600 to-brand-700 text-white rounded-[2rem] font-bold shadow-xl shadow-brand-500/30 flex items-center justify-center gap-3 transition-all group"
               >
                 <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <Camera className="w-5 h-5" />
@@ -750,13 +755,13 @@ export default function App() {
         )}
 
         {activeTab === 'history' && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">Riwayat <span className="text-brand-600">Absensi</span></h2>
               <button 
                 onClick={() => setShowPassword(!showPassword)} 
                 className={cn(
-                  "p-2.5 rounded-xl transition-all duration-300",
+                  "p-2.5 rounded-2xl transition-all duration-300",
                   showPassword ? "bg-brand-500 text-white shadow-lg shadow-brand-500/30" : "bg-white text-slate-400 border border-slate-100"
                 )}
               >
@@ -770,7 +775,7 @@ export default function App() {
                   initial={{ opacity: 0, height: 0 }} 
                   animate={{ opacity: 1, height: 'auto' }} 
                   exit={{ opacity: 0, height: 0 }}
-                  className="glass p-6 rounded-[2.5rem] space-y-4 overflow-hidden"
+                  className="glass p-5 rounded-[2rem] space-y-4 overflow-hidden"
                 >
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1.5">
@@ -787,7 +792,7 @@ export default function App() {
               )}
             </AnimatePresence>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               {history.length === 0 ? (
                 <div className="text-center py-12">
                   <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -844,7 +849,7 @@ export default function App() {
         )}
 
         {activeTab === 'admin-dash' && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">Aktivitas <span className="text-brand-600">Hari Ini</span></h2>
             <div className="space-y-3">
               {adminToday.length === 0 ? (
@@ -882,7 +887,7 @@ export default function App() {
         )}
 
         {activeTab === 'admin-users' && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">Kelola <span className="text-brand-600">Pegawai</span></h2>
             <div className="space-y-4">
               {adminUsers.map((u) => (
@@ -890,7 +895,7 @@ export default function App() {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   key={u.id} 
-                  className="glass p-6 rounded-[2.5rem] space-y-5 card-hover"
+                  className="glass p-5 rounded-[2.5rem] space-y-4 card-hover"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -928,9 +933,9 @@ export default function App() {
         )}
 
         {activeTab === 'admin-filter' && (
-          <div className="space-y-6">
+          <div className="space-y-5">
             <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">Laporan <span className="text-brand-600">Absensi</span></h2>
-            <div className="glass p-8 rounded-[3rem] space-y-6 shadow-xl shadow-slate-200/50">
+            <div className="glass p-6 rounded-[2.5rem] space-y-5 shadow-xl shadow-slate-200/50">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 ml-1">Dari Tanggal</label>
@@ -948,7 +953,7 @@ export default function App() {
                   {adminUsers.map(u => <option key={u.id} value={u.id}>{u.display_name}</option>)}
                 </select>
               </div>
-              <button onClick={fetchExportData} className="w-full py-5 btn-primary rounded-2xl font-bold text-sm tracking-wide">Tampilkan Data</button>
+              <button onClick={fetchExportData} className="w-full py-4 btn-primary rounded-2xl font-bold text-sm tracking-wide">Tampilkan Data</button>
             </div>
 
             <AnimatePresence>
@@ -1003,24 +1008,24 @@ export default function App() {
         )}
 
         {activeTab === 'profile' && (
-          <div className="space-y-6">
+          <div className="space-y-5">
             <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">Profil <span className="text-brand-600">Saya</span></h2>
-            <div className="glass p-8 rounded-[3rem] space-y-8 shadow-xl shadow-slate-200/50">
-              <div className="flex items-center gap-6 pb-8 border-b border-slate-100/50">
+            <div className="glass p-6 rounded-[2.5rem] space-y-6 shadow-xl shadow-slate-200/50">
+              <div className="flex items-center gap-5 pb-6 border-b border-slate-100/50">
                 <div className="relative">
-                  <div className="w-20 h-20 rounded-[2rem] bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-500/30">
-                    <User className="w-10 h-10 text-white" />
+                  <div className="w-18 h-18 rounded-[2rem] bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-500/30">
+                    <User className="w-9 h-9 text-white" />
                   </div>
-                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 rounded-full border-4 border-white shadow-sm" />
+                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-3 border-white shadow-sm" />
                 </div>
                 <div>
-                  <p className="font-extrabold text-xl text-slate-900 leading-tight">{user.display_name}</p>
+                  <p className="font-extrabold text-lg text-slate-900 leading-tight">{user.display_name}</p>
                   <p className="text-[10px] text-slate-400 uppercase font-bold tracking-[0.2em] mt-1">{user.role}</p>
                 </div>
               </div>
 
-              <form onSubmit={handleChangePassword} className="space-y-6">
-                <div className="flex items-center gap-2 mb-2">
+              <form onSubmit={handleChangePassword} className="space-y-5">
+                <div className="flex items-center gap-2 mb-1">
                   <div className="w-8 h-8 rounded-xl bg-brand-50 flex items-center justify-center">
                     <KeyRound className="w-4 h-4 text-brand-600" />
                   </div>
@@ -1031,30 +1036,30 @@ export default function App() {
                   <PasswordInput label="Password Baru" value={changePassData.new} onChange={(v: string) => setChangePassData({...changePassData, new: v})} placeholder="Masukkan password baru" />
                   <PasswordInput label="Konfirmasi Password Baru" value={changePassData.confirm} onChange={(v: string) => setChangePassData({...changePassData, confirm: v})} placeholder="Ulangi password baru" />
                 </div>
-                <button type="submit" className="w-full py-5 btn-primary rounded-[2rem] font-bold text-sm tracking-wide shadow-xl shadow-brand-500/20">Simpan Password Baru</button>
+                <button type="submit" className="w-full py-4 btn-primary rounded-[2rem] font-bold text-sm tracking-wide shadow-xl shadow-brand-500/20">Simpan Password Baru</button>
               </form>
             </div>
           </div>
         )}
       </main>
 
-      {/* Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto glass rounded-t-[2.5rem] px-8 py-5 flex justify-around items-center z-40 shadow-[0_-8px_32px_rgba(0,0,0,0.05)]">
+      {/* Navigation - slightly reduced */}
+      <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto glass rounded-t-[2rem] px-6 py-3 flex justify-around items-center z-40 shadow-[0_-8px_32px_rgba(0,0,0,0.05)]">
         {user.role === 'admin' ? (
           <>
-            <button onClick={() => setActiveTab('admin-dash')} className={cn("flex flex-col items-center gap-1.5 transition-all duration-300", activeTab === 'admin-dash' ? "text-brand-600 scale-110" : "text-slate-400 hover:text-slate-600")}>
+            <button onClick={() => setActiveTab('admin-dash')} className={cn("flex flex-col items-center gap-1 transition-all duration-300", activeTab === 'admin-dash' ? "text-brand-600 scale-110" : "text-slate-400 hover:text-slate-600")}>
               <div className={cn("p-2 rounded-xl transition-colors", activeTab === 'admin-dash' ? "bg-brand-50" : "bg-transparent")}>
                 <LayoutDashboard className="w-6 h-6" />
               </div>
               <span className="text-[8px] font-bold uppercase tracking-[0.15em]">Dashboard</span>
             </button>
-            <button onClick={() => setActiveTab('admin-filter')} className={cn("flex flex-col items-center gap-1.5 transition-all duration-300", activeTab === 'admin-filter' ? "text-brand-600 scale-110" : "text-slate-400 hover:text-slate-600")}>
+            <button onClick={() => setActiveTab('admin-filter')} className={cn("flex flex-col items-center gap-1 transition-all duration-300", activeTab === 'admin-filter' ? "text-brand-600 scale-110" : "text-slate-400 hover:text-slate-600")}>
               <div className={cn("p-2 rounded-xl transition-colors", activeTab === 'admin-filter' ? "bg-brand-50" : "bg-transparent")}>
                 <Filter className="w-6 h-6" />
               </div>
               <span className="text-[8px] font-bold uppercase tracking-[0.15em]">Laporan</span>
             </button>
-            <button onClick={() => setActiveTab('admin-users')} className={cn("flex flex-col items-center gap-1.5 transition-all duration-300", activeTab === 'admin-users' ? "text-brand-600 scale-110" : "text-slate-400 hover:text-slate-600")}>
+            <button onClick={() => setActiveTab('admin-users')} className={cn("flex flex-col items-center gap-1 transition-all duration-300", activeTab === 'admin-users' ? "text-brand-600 scale-110" : "text-slate-400 hover:text-slate-600")}>
               <div className={cn("p-2 rounded-xl transition-colors", activeTab === 'admin-users' ? "bg-brand-50" : "bg-transparent")}>
                 <Users className="w-6 h-6" />
               </div>
@@ -1063,13 +1068,13 @@ export default function App() {
           </>
         ) : (
           <>
-            <button onClick={() => setActiveTab('home')} className={cn("flex flex-col items-center gap-1.5 transition-all duration-300", activeTab === 'home' ? "text-brand-600 scale-110" : "text-slate-400 hover:text-slate-600")}>
+            <button onClick={() => setActiveTab('home')} className={cn("flex flex-col items-center gap-1 transition-all duration-300", activeTab === 'home' ? "text-brand-600 scale-110" : "text-slate-400 hover:text-slate-600")}>
               <div className={cn("p-2 rounded-xl transition-colors", activeTab === 'home' ? "bg-brand-50" : "bg-transparent")}>
                 <CalendarIcon className="w-6 h-6" />
               </div>
               <span className="text-[8px] font-bold uppercase tracking-[0.15em]">Absen</span>
             </button>
-            <button onClick={() => setActiveTab('history')} className={cn("flex flex-col items-center gap-1.5 transition-all duration-300", activeTab === 'history' ? "text-brand-600 scale-110" : "text-slate-400 hover:text-slate-600")}>
+            <button onClick={() => setActiveTab('history')} className={cn("flex flex-col items-center gap-1 transition-all duration-300", activeTab === 'history' ? "text-brand-600 scale-110" : "text-slate-400 hover:text-slate-600")}>
               <div className={cn("p-2 rounded-xl transition-colors", activeTab === 'history' ? "bg-brand-50" : "bg-transparent")}>
                 <History className="w-6 h-6" />
               </div>
@@ -1117,7 +1122,7 @@ export default function App() {
                 </div>
               </div>
             </div>
-            <div className="p-10 glass-dark flex flex-col items-center gap-8 rounded-t-[3rem] -mt-12 relative z-10">
+            <div className="p-8 glass-dark flex flex-col items-center gap-6 rounded-t-[3rem] -mt-12 relative z-10">
               <div className="text-center">
                 <p className="text-white font-extrabold text-xl mb-1 tracking-tight">Verifikasi Wajah</p>
                 <p className="text-slate-400 text-xs font-medium">Pastikan pencahayaan cukup dan wajah terlihat jelas</p>
