@@ -601,137 +601,125 @@ export default function App() {
   return (
     <div className="h-screen bg-[#F8FAFC] flex flex-col max-w-md mx-auto shadow-2xl relative overflow-hidden">
       {/* Header */}
-      <header className="p-3 glass sticky top-0 z-30 flex justify-between items-center border-b-0 rounded-b-[2rem]">
+      <header className="py-2 px-3 glass sticky top-0 z-30 flex justify-between items-center border-b-0 rounded-b-[2rem]">
         <div className="flex items-center gap-2">
-          <div className="w-9 h-9 bg-white rounded-xl flex items-center justify-center p-1 shadow-sm border border-slate-100">
+          <div className="w-8 h-8 bg-white rounded-xl flex items-center justify-center p-1 shadow-sm border border-slate-100">
             <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
           </div>
           <div>
-            <h1 className="text-sm font-black text-slate-900 tracking-tighter leading-none">AbsenKita</h1>
-            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">{user.display_name}</p>
+            <h1 className="text-xs font-black text-slate-900 tracking-tighter leading-none">AbsenKita</h1>
+            <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest leading-none">{user.display_name}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <button 
             onClick={() => setActiveTab('profile')}
             className={cn(
-              "p-2 rounded-xl transition-all duration-300",
+              "p-1.5 rounded-xl transition-all duration-300",
               activeTab === 'profile' ? "bg-brand-500 text-white shadow-lg shadow-brand-500/30" : "bg-slate-50 text-slate-400 hover:bg-slate-100"
             )}
           >
-            <User className="w-4 h-4" />
+            <User className="w-3.5 h-3.5" />
           </button>
-          <button onClick={handleLogout} className="p-2 bg-slate-50 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all">
-            <LogOut className="w-4 h-4" />
+          <button onClick={handleLogout} className="p-1.5 bg-slate-50 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all">
+            <LogOut className="w-3.5 h-3.5" />
           </button>
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto p-4 pb-24">
+      <main className="flex-1 overflow-y-auto p-3 pb-16">
         {activeTab === 'home' && (
-          <div className="flex flex-col h-full justify-between gap-3">
+          <div className="flex flex-col gap-2">
             <div>
               {error && (
                 <motion.div 
                   initial={{ opacity: 0, y: -10 }} 
                   animate={{ opacity: 1, y: 0 }} 
-                  className="bg-red-50 border border-red-100 p-3 rounded-2xl flex items-center gap-2 mb-3"
+                  className="bg-red-50 border border-red-100 p-1.5 rounded-xl flex items-center gap-2 mb-2"
                 >
-                  <AlertCircle className="w-4 h-4 text-red-500" />
-                  <p className="text-[10px] font-bold text-red-600 uppercase tracking-wider">{error}</p>
+                  <AlertCircle className="w-3 h-3 text-red-500" />
+                  <p className="text-[9px] font-bold text-red-600 uppercase tracking-wider">{error}</p>
                 </motion.div>
               )}
 
-              <div className="space-y-4">
+              <div className="space-y-2">
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
-                  className="glass-dark text-white p-6 rounded-[2.5rem] shadow-2xl shadow-slate-900/20 relative overflow-hidden"
+                  className="glass-dark text-white p-4 rounded-[2rem] shadow-xl shadow-slate-900/10 relative overflow-hidden"
                 >
                   <div className="relative z-10">
-                    <div className="flex items-center gap-2 mb-1 opacity-60">
-                      <Clock className="w-3.5 h-3.5" />
-                      <span className="text-[9px] font-bold uppercase tracking-[0.2em]">Current Time</span>
+                    <div className="flex items-center gap-2 mb-0.5 opacity-60">
+                      <Clock className="w-2.5 h-2.5" />
+                      <span className="text-[7px] font-bold uppercase tracking-[0.2em]">Current Time</span>
                     </div>
-                    <div className="text-5xl font-extrabold tracking-tighter mb-4 font-mono">{format(currentTime, 'HH:mm:ss')}</div>
-                    <div className="flex gap-3">
-                      <div className="flex-1 bg-white/5 rounded-xl p-3 border border-white/10 backdrop-blur-md">
-                        <p className="text-[7px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">In Schedule</p>
-                        <p className="text-sm font-bold">{schedule?.start || '--:--'}</p>
+                    <div className="text-3xl font-extrabold tracking-tighter mb-2 font-mono">{format(currentTime, 'HH:mm:ss')}</div>
+                    <div className="flex gap-2">
+                      <div className="flex-1 bg-white/5 rounded-lg p-2 border border-white/10 backdrop-blur-sm">
+                        <p className="text-[6px] font-bold uppercase tracking-widest text-slate-400">In</p>
+                        <p className="text-[11px] font-bold">{schedule?.start || '--:--'}</p>
                       </div>
-                      <div className="flex-1 bg-white/5 rounded-xl p-3 border border-white/10 backdrop-blur-md">
-                        <p className="text-[7px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Out Schedule</p>
-                        <p className="text-sm font-bold">{checkIn?.scheduled_out_time ? format(parseDate(checkIn.scheduled_out_time), 'HH:mm') : schedule?.end || '--:--'}</p>
+                      <div className="flex-1 bg-white/5 rounded-lg p-2 border border-white/10 backdrop-blur-sm">
+                        <p className="text-[6px] font-bold uppercase tracking-widest text-slate-400">Out</p>
+                        <p className="text-[11px] font-bold">{checkIn?.scheduled_out_time ? format(parseDate(checkIn.scheduled_out_time), 'HH:mm') : schedule?.end || '--:--'}</p>
                       </div>
                     </div>
                   </div>
-                  {/* Decorative Gradients */}
-                  <div className="absolute -top-12 -right-12 w-48 h-48 bg-brand-500/30 rounded-full blur-[60px]" />
-                  <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-emerald-500/20 rounded-full blur-[60px]" />
+                  <div className="absolute -top-12 -right-12 w-32 h-32 bg-brand-500/20 rounded-full blur-[40px]" />
                 </motion.div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2">
                   <motion.div 
                     whileHover={{ scale: 1.02 }}
                     className={cn(
-                      "p-4 rounded-[1.5rem] border transition-all duration-500 card-hover", 
-                      checkIn ? "bg-emerald-50/50 border-emerald-100 shadow-lg shadow-emerald-500/5" : "bg-white border-slate-100"
+                      "p-2.5 rounded-xl border transition-all duration-500", 
+                      checkIn ? "bg-emerald-50/50 border-emerald-100 shadow-sm" : "bg-white border-slate-100"
                     )}
                   >
-                    <div className="flex items-center gap-2 mb-1.5">
-                      <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center transition-colors", checkIn ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30" : "bg-slate-50 text-slate-300")}>
-                        <CheckCircle2 className="w-3.5 h-3.5" />
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                      <div className={cn("w-5 h-5 rounded-md flex items-center justify-center transition-colors", checkIn ? "bg-emerald-500 text-white shadow-sm" : "bg-slate-50 text-slate-300")}>
+                        <CheckCircle2 className="w-2.5 h-2.5" />
                       </div>
-                      <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Clock In</span>
+                      <span className="text-[7px] font-bold uppercase tracking-widest text-slate-400">Clock In</span>
                     </div>
-                    <p className="text-lg font-extrabold text-slate-900">{checkIn ? format(parseDate(checkIn.timestamp), 'HH:mm') : '--:--'}</p>
-                    {checkIn?.is_late ? (
-                      <div className="flex items-center gap-1 mt-1 text-red-500">
-                        <AlertCircle className="w-3 h-3" />
-                        <p className="text-[8px] font-bold uppercase">Lemp {checkIn.late_minutes}m</p>
-                      </div>
-                    ) : checkIn && (
-                      <p className="text-[8px] text-emerald-600 font-bold mt-1 uppercase tracking-wide">Tepat Waktu</p>
-                    )}
-                    {checkIn?.scheduled_out_time && (
-                      <div className="mt-1.5 pt-1.5 border-t border-emerald-100/50">
-                        <p className="text-[7px] text-brand-600 font-bold uppercase tracking-wider">Bisa pulang {format(parseDate(checkIn.scheduled_out_time), 'HH:mm')}</p>
-                      </div>
+                    <p className="text-sm font-extrabold text-slate-900">{checkIn ? format(parseDate(checkIn.timestamp), 'HH:mm') : '--:--'}</p>
+                    {checkIn?.is_late && (
+                      <p className="text-[6px] font-bold text-red-500 uppercase mt-0.5">Lemp {checkIn.late_minutes}m</p>
                     )}
                   </motion.div>
 
                   <motion.div 
                     whileHover={{ scale: 1.02 }}
                     className={cn(
-                      "p-4 rounded-[1.5rem] border transition-all duration-500 card-hover", 
-                      checkOut ? "bg-brand-50/50 border-brand-100 shadow-lg shadow-brand-500/5" : "bg-white border-slate-100"
+                      "p-2.5 rounded-xl border transition-all duration-500", 
+                      checkOut ? "bg-brand-50/50 border-brand-100 shadow-sm" : "bg-white border-slate-100"
                     )}
                   >
-                    <div className="flex items-center gap-2 mb-1.5">
-                      <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center transition-colors", checkOut ? "bg-brand-500 text-white shadow-lg shadow-brand-500/30" : "bg-slate-50 text-slate-300")}>
-                        <LogOut className="w-3.5 h-3.5" />
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                      <div className={cn("w-5 h-5 rounded-md flex items-center justify-center transition-colors", checkOut ? "bg-brand-500 text-white shadow-sm" : "bg-slate-50 text-slate-300")}>
+                        <LogOut className="w-2.5 h-2.5" />
                       </div>
-                      <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Clock Out</span>
+                      <span className="text-[7px] font-bold uppercase tracking-widest text-slate-400">Clock Out</span>
                     </div>
-                    <p className="text-lg font-extrabold text-slate-900">{checkOut ? format(parseDate(checkOut.timestamp), 'HH:mm') : '--:--'}</p>
-                    {checkOut && <p className="text-[8px] text-brand-600 font-bold mt-1 uppercase tracking-wide">Sudah Absen</p>}
+                    <p className="text-sm font-extrabold text-slate-900">{checkOut ? format(parseDate(checkOut.timestamp), 'HH:mm') : '--:--'}</p>
+                    {checkOut && <p className="text-[6px] text-brand-600 font-bold mt-0.5 uppercase tracking-wide">Done</p>}
                   </motion.div>
                 </div>
 
-                <div className="glass p-4 rounded-[1.5rem] flex items-center justify-between card-hover">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center shadow-inner">
-                      <MapPin className={cn("w-5 h-5", distance !== null && distance <= OFFICE_LOCATION.radius ? "text-emerald-500" : "text-slate-300")} />
+                <div className="glass p-2.5 rounded-xl flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-slate-50 flex items-center justify-center shadow-inner">
+                      <MapPin className={cn("w-3.5 h-3.5", distance !== null && distance <= OFFICE_LOCATION.radius ? "text-emerald-500" : "text-slate-300")} />
                     </div>
                     <div>
-                      <p className="text-[7px] font-bold uppercase tracking-[0.15em] text-slate-400 mb-0.5">Status Lokasi</p>
-                      <p className={cn("text-xs font-bold", distance !== null && distance <= OFFICE_LOCATION.radius ? "text-slate-900" : "text-red-500")}>
-                        {distance !== null ? (distance <= OFFICE_LOCATION.radius ? "Dalam Jangkauan" : `Luar Jangkauan (${Math.round(distance)}m)`) : "Searching..."}
+                      <p className="text-[6px] font-bold uppercase text-slate-400">Location</p>
+                      <p className={cn("text-[10px] font-bold", distance !== null && distance <= OFFICE_LOCATION.radius ? "text-slate-900" : "text-red-500")}>
+                        {distance !== null ? (distance <= OFFICE_LOCATION.radius ? "In Range" : `${Math.round(distance)}m`) : "..."}
                       </p>
                     </div>
                   </div>
-                  <button onClick={requestLocation} className="p-2 bg-brand-50 text-brand-600 rounded-lg hover:bg-brand-100 transition-colors">
-                    <RotateCcw className="w-3.5 h-3.5" />
+                  <button onClick={requestLocation} className="p-1 bg-brand-50 text-brand-600 rounded-md">
+                    <RotateCcw className="w-2.5 h-2.5" />
                   </button>
                 </div>
               </div>
@@ -742,12 +730,10 @@ export default function App() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }} 
                 onClick={() => { requestLocation(); setIsCameraOpen(true); }} 
-                className="w-full py-4 bg-gradient-to-r from-brand-600 to-brand-700 text-white rounded-[2rem] font-bold shadow-xl shadow-brand-500/30 flex items-center justify-center gap-3 transition-all group mb-2"
+                className="w-full py-2.5 bg-gradient-to-r from-brand-600 to-brand-700 text-white rounded-xl font-bold shadow-lg shadow-brand-500/20 flex items-center justify-center gap-2 transition-all group mt-1"
               >
-                <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Camera className="w-4 h-4" />
-                </div>
-                <span className="text-base tracking-tight">{checkIn ? "Absen Pulang" : "Absen Masuk"}</span>
+                <Camera className="w-3.5 h-3.5" />
+                <span className="text-xs tracking-tight">{checkIn ? "Absen Pulang" : "Absen Masuk"}</span>
               </motion.button>
             )}
           </div>
@@ -1043,41 +1029,41 @@ export default function App() {
       </main>
 
       {/* Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto glass rounded-t-[2.5rem] px-8 py-3.5 flex justify-around items-center z-40 shadow-[0_-8px_32px_rgba(0,0,0,0.05)]">
+      <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto glass rounded-t-[2rem] px-8 py-2.5 flex justify-around items-center z-40 shadow-[0_-8px_32px_rgba(0,0,0,0.05)]">
         {user.role === 'admin' ? (
           <>
-            <button onClick={() => setActiveTab('admin-dash')} className={cn("flex flex-col items-center gap-1.5 transition-all duration-300", activeTab === 'admin-dash' ? "text-brand-600 scale-110" : "text-slate-400 hover:text-slate-600")}>
-              <div className={cn("p-2 rounded-xl transition-colors", activeTab === 'admin-dash' ? "bg-brand-50" : "bg-transparent")}>
-                <LayoutDashboard className="w-6 h-6" />
+            <button onClick={() => setActiveTab('admin-dash')} className={cn("flex flex-col items-center gap-1 transition-all duration-300", activeTab === 'admin-dash' ? "text-brand-600 scale-105" : "text-slate-400 hover:text-slate-600")}>
+              <div className={cn("p-1.5 rounded-lg transition-colors", activeTab === 'admin-dash' ? "bg-brand-50" : "bg-transparent")}>
+                <LayoutDashboard className="w-5 h-5" />
               </div>
-              <span className="text-[8px] font-bold uppercase tracking-[0.15em]">Dashboard</span>
+              <span className="text-[7px] font-bold uppercase tracking-[0.15em]">Dashboard</span>
             </button>
-            <button onClick={() => setActiveTab('admin-filter')} className={cn("flex flex-col items-center gap-1.5 transition-all duration-300", activeTab === 'admin-filter' ? "text-brand-600 scale-110" : "text-slate-400 hover:text-slate-600")}>
-              <div className={cn("p-2 rounded-xl transition-colors", activeTab === 'admin-filter' ? "bg-brand-50" : "bg-transparent")}>
-                <Filter className="w-6 h-6" />
+            <button onClick={() => setActiveTab('admin-filter')} className={cn("flex flex-col items-center gap-1 transition-all duration-300", activeTab === 'admin-filter' ? "text-brand-600 scale-105" : "text-slate-400 hover:text-slate-600")}>
+              <div className={cn("p-1.5 rounded-lg transition-colors", activeTab === 'admin-filter' ? "bg-brand-50" : "bg-transparent")}>
+                <Filter className="w-5 h-5" />
               </div>
-              <span className="text-[8px] font-bold uppercase tracking-[0.15em]">Laporan</span>
+              <span className="text-[7px] font-bold uppercase tracking-[0.15em]">Laporan</span>
             </button>
-            <button onClick={() => setActiveTab('admin-users')} className={cn("flex flex-col items-center gap-1.5 transition-all duration-300", activeTab === 'admin-users' ? "text-brand-600 scale-110" : "text-slate-400 hover:text-slate-600")}>
-              <div className={cn("p-2 rounded-xl transition-colors", activeTab === 'admin-users' ? "bg-brand-50" : "bg-transparent")}>
-                <Users className="w-6 h-6" />
+            <button onClick={() => setActiveTab('admin-users')} className={cn("flex flex-col items-center gap-1 transition-all duration-300", activeTab === 'admin-users' ? "text-brand-600 scale-105" : "text-slate-400 hover:text-slate-600")}>
+              <div className={cn("p-1.5 rounded-lg transition-colors", activeTab === 'admin-users' ? "bg-brand-50" : "bg-transparent")}>
+                <Users className="w-5 h-5" />
               </div>
-              <span className="text-[8px] font-bold uppercase tracking-[0.15em]">Pegawai</span>
+              <span className="text-[7px] font-bold uppercase tracking-[0.15em]">Pegawai</span>
             </button>
           </>
         ) : (
           <>
-            <button onClick={() => setActiveTab('home')} className={cn("flex flex-col items-center gap-1.5 transition-all duration-300", activeTab === 'home' ? "text-brand-600 scale-110" : "text-slate-400 hover:text-slate-600")}>
-              <div className={cn("p-2 rounded-xl transition-colors", activeTab === 'home' ? "bg-brand-50" : "bg-transparent")}>
-                <CalendarIcon className="w-6 h-6" />
+            <button onClick={() => setActiveTab('home')} className={cn("flex flex-col items-center gap-1 transition-all duration-300", activeTab === 'home' ? "text-brand-600 scale-105" : "text-slate-400 hover:text-slate-600")}>
+              <div className={cn("p-1.5 rounded-lg transition-colors", activeTab === 'home' ? "bg-brand-50" : "bg-transparent")}>
+                <CalendarIcon className="w-5 h-5" />
               </div>
-              <span className="text-[8px] font-bold uppercase tracking-[0.15em]">Absen</span>
+              <span className="text-[7px] font-bold uppercase tracking-[0.15em]">Absen</span>
             </button>
-            <button onClick={() => setActiveTab('history')} className={cn("flex flex-col items-center gap-1.5 transition-all duration-300", activeTab === 'history' ? "text-brand-600 scale-110" : "text-slate-400 hover:text-slate-600")}>
-              <div className={cn("p-2 rounded-xl transition-colors", activeTab === 'history' ? "bg-brand-50" : "bg-transparent")}>
-                <History className="w-6 h-6" />
+            <button onClick={() => setActiveTab('history')} className={cn("flex flex-col items-center gap-1 transition-all duration-300", activeTab === 'history' ? "text-brand-600 scale-105" : "text-slate-400 hover:text-slate-600")}>
+              <div className={cn("p-1.5 rounded-lg transition-colors", activeTab === 'history' ? "bg-brand-50" : "bg-transparent")}>
+                <History className="w-5 h-5" />
               </div>
-              <span className="text-[8px] font-bold uppercase tracking-[0.15em]">Riwayat</span>
+              <span className="text-[7px] font-bold uppercase tracking-[0.15em]">Riwayat</span>
             </button>
           </>
         )}
