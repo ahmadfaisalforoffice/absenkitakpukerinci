@@ -607,7 +607,7 @@ export default function App() {
             <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
           </div>
           <div>
-            <h1 className="text-sm font-black text-slate-900 tracking-tighter leading-none">AbsenKita</h1>
+            <h1 className="text-sm font-black text-slate-900 tracking-tighter leading-none">Absen<span className="text-brand-600">Kita</span></h1>
             <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">{user.display_name}</p>
           </div>
         </div>
