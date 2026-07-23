@@ -52,6 +52,7 @@ type AttendanceRecord = {
   late_minutes: number;
   scheduled_out_time: string | null;
   work_mode?: 'WFO' | 'WFH';
+  performance_report?: string;
 };
 
 const PasswordInput = ({ label, value, onChange, placeholder }: any) => {
@@ -124,6 +125,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState(getJakartaDate());
   const [workMode, setWorkMode] = useState<'WFO' | 'WFH'>('WFO');
+  const [performanceReport, setPerformanceReport] = useState('');
   const [cameraMessage, setCameraMessage] = useState<{ text: string; type: 'error' | 'info' } | null>(null);
 
   // Filters
@@ -358,7 +360,8 @@ export default function App() {
         'Tipe': r.type === 'in' ? 'Clock In' : 'Clock Out',
         'Mode': r.work_mode || 'WFO',
         'Terlambat': r.is_late ? 'Ya' : 'Tidak',
-        'Menit Terlambat': r.late_minutes
+        'Menit Terlambat': r.late_minutes,
+        'Laporan Kinerja': r.performance_report || '-'
       };
     });
 
@@ -433,6 +436,12 @@ export default function App() {
     setLoading(true);
     const type = todayRecords.some(r => r.type === 'in') ? 'out' : 'in';
     
+    if (type === 'out' && !performanceReport.trim()) {
+      setCameraMessage({ text: "Laporan kinerja harian wajib diisi", type: 'error' });
+      setLoading(false);
+      return;
+    }
+
     // Upload photo to Supabase first
     const photoUrl = await uploadPhoto(imageSrc, user.id, type);
     if (!photoUrl) {
@@ -493,7 +502,8 @@ export default function App() {
           lateMinutes,
           scheduledOutTime,
           timestamp: getJakartaDate().toISOString(),
-          workMode: getJakartaDate().getDay() === 5 ? workMode : 'WFO'
+          workMode: getJakartaDate().getDay() === 5 ? workMode : 'WFO',
+          performanceReport: type === 'out' ? performanceReport : null
         })
       });
       
@@ -502,9 +512,11 @@ export default function App() {
         setTimeout(() => {
           setIsCameraOpen(false);
           setCameraMessage(null);
+          setPerformanceReport('');
         }, 3000);
       } else {
         setIsCameraOpen(false);
+        setPerformanceReport('');
       }
       fetchTodayRecords();
       fetchHistory();
@@ -836,6 +848,12 @@ export default function App() {
                         </span>
                       )}
                     </div>
+                    {record.performance_report && (
+                      <div className="mt-2 p-2 bg-slate-50 rounded-lg border border-slate-100">
+                        <p className="text-[9px] font-bold text-slate-400 uppercase mb-0.5">Laporan Kinerja:</p>
+                        <p className="text-[11px] text-slate-600 leading-relaxed italic">"{record.performance_report}"</p>
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               ))}
@@ -873,6 +891,11 @@ export default function App() {
                       </p>
                       {record.is_late === 1 && <span className="text-[8px] px-2 py-0.5 bg-red-50 text-red-500 rounded-full font-bold uppercase tracking-widest border border-red-100">Terlambat</span>}
                     </div>
+                    {record.performance_report && (
+                      <p className="mt-1.5 text-[11px] text-slate-500 line-clamp-1 italic">
+                        Laporan: {record.performance_report}
+                      </p>
+                    )}
                   </div>
                   <ChevronRight className="w-4 h-4 text-slate-300" />
                 </motion.div>
@@ -1117,7 +1140,7 @@ export default function App() {
                 </div>
               </div>
             </div>
-            <div className="p-10 glass-dark flex flex-col items-center gap-8 rounded-t-[3rem] -mt-12 relative z-10">
+            <div className="p-6 glass-dark flex flex-col items-center gap-6 rounded-t-[3rem] -mt-12 relative z-10 w-full overflow-y-auto max-h-[60vh]">
               <div className="text-center">
                 <p className="text-white font-extrabold text-xl mb-1 tracking-tight">Verifikasi Wajah</p>
                 <p className="text-slate-400 text-xs font-medium">Pastikan pencahayaan cukup dan wajah terlihat jelas</p>
@@ -1130,7 +1153,7 @@ export default function App() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     className={cn(
-                      "px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider text-center",
+                      "px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider text-center w-full",
                       cameraMessage.type === 'error' ? "bg-red-500/20 text-red-400 border border-red-500/30" : "bg-brand-500/20 text-brand-400 border border-brand-500/30"
                     )}
                   >
@@ -1138,6 +1161,20 @@ export default function App() {
                   </motion.div>
                 )}
               </AnimatePresence>
+
+              {/* Performance Report Field for Clock Out */}
+              {todayRecords.some(r => r.type === 'in') && (
+                <div className="w-full space-y-2">
+                  <label className="block text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 ml-1">Laporan Kinerja Harian <span className="text-red-500">*</span></label>
+                  <textarea 
+                    className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl p-4 text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-all resize-none h-24"
+                    placeholder="Tuliskan kegiatan/pekerjaan hari ini..."
+                    value={performanceReport}
+                    onChange={e => setPerformanceReport(e.target.value)}
+                    required
+                  />
+                </div>
+              )}
 
               <div className="w-full max-w-[200px] space-y-2">
                 <label className="block text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 text-center">Mode Kerja {getJakartaDate().getDay() === 5 ? '(Jumat)' : ''}</label>
