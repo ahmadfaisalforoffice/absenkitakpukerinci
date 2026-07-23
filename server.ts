@@ -38,7 +38,7 @@ const initDb = async () => {
   if (isDbInitialized) return;
   
   if (!process.env.DATABASE_URL) {
-    throw new Error("DATABASE_URL is not defined in environment variables. Please set it in Vercel.");
+    throw new Error("DATABASE_URL is not defined. Please set it in the Secrets panel in AI Studio Settings.");
   }
 
   const client = await pool.connect();
@@ -66,6 +66,7 @@ const initDb = async () => {
         late_minutes INTEGER DEFAULT 0,
         scheduled_out_time TIMESTAMPTZ,
         work_mode TEXT DEFAULT 'WFO',
+        performance_report TEXT,
         FOREIGN KEY(user_id) REFERENCES users(id)
       );
 
@@ -76,6 +77,9 @@ const initDb = async () => {
         ALTER TABLE attendance ALTER COLUMN scheduled_out_time TYPE TIMESTAMPTZ;
         IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='attendance' AND column_name='work_mode') THEN
           ALTER TABLE attendance ADD COLUMN work_mode TEXT DEFAULT 'WFO';
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='attendance' AND column_name='performance_report') THEN
+          ALTER TABLE attendance ADD COLUMN performance_report TEXT;
         END IF;
       EXCEPTION 
         WHEN undefined_column THEN 
@@ -145,7 +149,7 @@ app.use(express.json({ limit: '10mb' }));
 
 // Middleware to ensure DB is initialized
 app.use(async (req, res, next) => {
-  if (req.path.startsWith('/api/')) {
+  if (req.path.startsWith('/api/') && req.path !== '/api/health') {
     try {
       await initDb();
     } catch (err: any) {
@@ -158,15 +162,11 @@ app.use(async (req, res, next) => {
 
 // Health check
 app.get("/api/health", async (req, res) => {
-  try {
-    if (!process.env.DATABASE_URL) {
-      return res.status(500).json({ status: "error", message: "DATABASE_URL is missing" });
-    }
-    const result = await pool.query("SELECT NOW()");
-    res.json({ status: "ok", time: result.rows[0].now, env: process.env.NODE_ENV });
-  } catch (err: any) {
-    res.status(500).json({ status: "error", message: err.message });
-  }
+  res.json({ 
+    status: "ok", 
+    env: process.env.NODE_ENV,
+    database: process.env.DATABASE_URL ? "configured" : "missing"
+  });
 });
 
 // Auth
@@ -209,13 +209,13 @@ app.get("/api/attendance/today", async (req, res) => {
 
 app.post("/api/attendance", async (req, res) => {
   try {
-    const { userId, type, photo, latitude, longitude, isLate, lateMinutes, scheduledOutTime, timestamp, workMode } = req.body;
+    const { userId, type, photo, latitude, longitude, isLate, lateMinutes, scheduledOutTime, timestamp, workMode, performanceReport } = req.body;
     
     const result = await pool.query(`
-      INSERT INTO attendance (user_id, type, photo, latitude, longitude, is_late, late_minutes, scheduled_out_time, timestamp, work_mode)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, COALESCE($9, CURRENT_TIMESTAMP), $10)
+      INSERT INTO attendance (user_id, type, photo, latitude, longitude, is_late, late_minutes, scheduled_out_time, timestamp, work_mode, performance_report)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, COALESCE($9, CURRENT_TIMESTAMP), $10, $11)
       RETURNING id
-    `, [userId, type, photo, latitude, longitude, isLate ? 1 : 0, lateMinutes, scheduledOutTime, timestamp, workMode || 'WFO']);
+    `, [userId, type, photo, latitude, longitude, isLate ? 1 : 0, lateMinutes, scheduledOutTime, timestamp, workMode || 'WFO', performanceReport]);
     
     res.json({ id: result.rows[0].id, status: "success" });
   } catch (err) {
@@ -266,7 +266,7 @@ app.post("/api/change-password", async (req, res) => {
 app.get("/api/admin/today-activity", async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT a.id, a.user_id, a.type, a.timestamp, a.latitude, a.longitude, a.is_late, a.late_minutes, a.scheduled_out_time, a.work_mode, u.display_name 
+      SELECT a.id, a.user_id, a.type, a.timestamp, a.latitude, a.longitude, a.is_late, a.late_minutes, a.scheduled_out_time, a.work_mode, a.performance_report, u.display_name 
       FROM attendance a 
       JOIN users u ON a.user_id = u.id 
       WHERE a.timestamp >= (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Jakarta')::date 
@@ -318,7 +318,7 @@ app.get("/api/admin/export", async (req, res) => {
   try {
     const { startDate, endDate, userId } = req.query;
     let query = `
-      SELECT u.display_name, a.timestamp, a.type, a.is_late, a.late_minutes, a.work_mode
+      SELECT u.display_name, a.timestamp, a.type, a.is_late, a.late_minutes, a.work_mode, a.performance_report
       FROM attendance a
       JOIN users u ON a.user_id = u.id
       WHERE 1=1
@@ -367,11 +367,10 @@ async function setupServer() {
 
 if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
   setupServer().then(() => {
-    initDb().then(() => {
-      app.listen(3000, "0.0.0.0", () => {
-        console.log(`Server running on http://localhost:3000`);
-      });
-    }).catch(err => console.error("Failed to init DB:", err));
+    app.listen(3000, "0.0.0.0", () => {
+      console.log(`Server running on http://localhost:3000`);
+      initDb().catch(err => console.error("Initial DB connection failed (will retry on first API call):", err.message));
+    });
   });
 } else {
   // In Vercel, we rely on the middleware for DB initialization
