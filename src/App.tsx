@@ -127,8 +127,44 @@ export default function App() {
   const [workMode, setWorkMode] = useState<'WFO' | 'WFH'>('WFO');
   const [performanceReport, setPerformanceReport] = useState('');
   const [cameraMessage, setCameraMessage] = useState<{ text: string; type: 'error' | 'info' } | null>(null);
+  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>('default');
 
-  // Filters
+  // Notification logic
+  const requestNotificationPermission = async () => {
+    if (!("Notification" in window)) {
+      console.log("Browser does not support notifications");
+      return;
+    }
+    const permission = await Notification.requestPermission();
+    setNotificationPermission(permission);
+    return permission;
+  };
+
+  useEffect(() => {
+    if ("Notification" in window) {
+      setNotificationPermission(Notification.permission);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (checkIn?.scheduled_out_time && notificationPermission === 'granted') {
+      const outTime = parseDate(checkIn.scheduled_out_time);
+      const now = getJakartaDate();
+      const diff = outTime.getTime() - now.getTime();
+
+      if (diff > 0) {
+        console.log(`Scheduling out notification in ${Math.round(diff/1000)} seconds`);
+        const timer = setTimeout(() => {
+          new Notification("Waktunya Pulang!", {
+            body: `Halo ${user?.display_name}, sekarang sudah jam ${format(outTime, 'HH:mm')}. Waktunya absen pulang!`,
+            icon: "/logo.png",
+            vibrate: [200, 100, 200]
+          });
+        }, diff);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [checkIn?.scheduled_out_time, notificationPermission, user?.display_name]);
   const [historyFilter, setHistoryFilter] = useState({ start: '', end: '' });
   const [adminFilter, setAdminFilter] = useState({ start: '', end: '', userId: '' });
   const [filteredHistory, setFilteredHistory] = useState<AttendanceRecord[]>([]);
@@ -1039,6 +1075,32 @@ export default function App() {
                 <div>
                   <p className="font-extrabold text-xl text-slate-900 leading-tight">{user.display_name}</p>
                   <p className="text-[10px] text-slate-400 uppercase font-bold tracking-[0.2em] mt-1">{user.role}</p>
+                </div>
+              </div>
+
+              {/* Notification Settings */}
+              <div className="space-y-4 pb-8 border-b border-slate-100/50">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-xl bg-brand-50 flex items-center justify-center">
+                    <Clock className="w-4 h-4 text-brand-600" />
+                  </div>
+                  <h3 className="text-sm font-extrabold text-slate-900 tracking-tight">Notifikasi Pulang</h3>
+                </div>
+                <div className="bg-slate-50 p-4 rounded-2xl flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-bold text-slate-900">Status Notifikasi</p>
+                    <p className="text-[10px] text-slate-400 font-medium">Aktifkan pengingat jam pulang otomatis</p>
+                  </div>
+                  {notificationPermission === 'granted' ? (
+                    <span className="px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-xl text-[10px] font-bold uppercase tracking-wider border border-emerald-100">Aktif</span>
+                  ) : (
+                    <button 
+                      onClick={requestNotificationPermission}
+                      className="px-4 py-1.5 bg-brand-600 text-white rounded-xl text-[10px] font-bold uppercase tracking-wider shadow-lg shadow-brand-500/20"
+                    >
+                      Aktifkan
+                    </button>
+                  )}
                 </div>
               </div>
 
