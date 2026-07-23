@@ -128,6 +128,9 @@ export default function App() {
   const [performanceReport, setPerformanceReport] = useState('');
   const [cameraMessage, setCameraMessage] = useState<{ text: string; type: 'error' | 'info' } | null>(null);
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>('default');
+  const [isNotificationEnabled, setIsNotificationEnabled] = useState(() => {
+    return localStorage.getItem('notifications_enabled') !== 'false';
+  });
 
   const schedule = getWorkSchedule(currentTime);
   const checkIn = todayRecords.find(r => r.type === 'in');
@@ -141,7 +144,17 @@ export default function App() {
     }
     const permission = await Notification.requestPermission();
     setNotificationPermission(permission);
+    if (permission === 'granted') {
+      setIsNotificationEnabled(true);
+      localStorage.setItem('notifications_enabled', 'true');
+    }
     return permission;
+  };
+
+  const toggleNotification = () => {
+    const newValue = !isNotificationEnabled;
+    setIsNotificationEnabled(newValue);
+    localStorage.setItem('notifications_enabled', String(newValue));
   };
 
   useEffect(() => {
@@ -151,7 +164,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (checkIn?.scheduled_out_time && notificationPermission === 'granted') {
+    if (checkIn?.scheduled_out_time && notificationPermission === 'granted' && isNotificationEnabled) {
       const outTime = parseDate(checkIn.scheduled_out_time);
       const now = getJakartaDate();
       const diff = outTime.getTime() - now.getTime();
@@ -167,7 +180,7 @@ export default function App() {
         return () => clearTimeout(timer);
       }
     }
-  }, [checkIn?.scheduled_out_time, notificationPermission, user?.display_name]);
+  }, [checkIn?.scheduled_out_time, notificationPermission, isNotificationEnabled, user?.display_name]);
   const [historyFilter, setHistoryFilter] = useState({ start: '', end: '' });
   const [adminFilter, setAdminFilter] = useState({ start: '', end: '', userId: '' });
   const [filteredHistory, setFilteredHistory] = useState<AttendanceRecord[]>([]);
@@ -1091,7 +1104,17 @@ export default function App() {
                     <p className="text-[10px] text-slate-400 font-medium">Aktifkan pengingat jam pulang otomatis</p>
                   </div>
                   {notificationPermission === 'granted' ? (
-                    <span className="px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-xl text-[10px] font-bold uppercase tracking-wider border border-emerald-100">Aktif</span>
+                    <button 
+                      onClick={toggleNotification}
+                      className={cn(
+                        "px-4 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border",
+                        isNotificationEnabled 
+                          ? "bg-emerald-50 text-emerald-600 border-emerald-100" 
+                          : "bg-slate-200 text-slate-500 border-slate-300"
+                      )}
+                    >
+                      {isNotificationEnabled ? 'On' : 'Off'}
+                    </button>
                   ) : (
                     <button 
                       onClick={requestNotificationPermission}
