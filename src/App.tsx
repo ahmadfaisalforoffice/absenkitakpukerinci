@@ -427,6 +427,10 @@ export default function App() {
 
   const uploadPhoto = async (base64: string, userId: number, type: string) => {
     try {
+      if (!supabase) {
+        console.error('Supabase client not initialized. Check your environment variables.');
+        return null;
+      }
       // Convert base64 to blob
       const base64Data = base64.split(',')[1];
       const byteCharacters = atob(base64Data);
