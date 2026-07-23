@@ -129,6 +129,10 @@ export default function App() {
   const [cameraMessage, setCameraMessage] = useState<{ text: string; type: 'error' | 'info' } | null>(null);
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>('default');
 
+  const schedule = getWorkSchedule(currentTime);
+  const checkIn = todayRecords.find(r => r.type === 'in');
+  const checkOut = todayRecords.find(r => r.type === 'out');
+
   // Notification logic
   const requestNotificationPermission = async () => {
     if (!("Notification" in window)) {
@@ -157,8 +161,7 @@ export default function App() {
         const timer = setTimeout(() => {
           new Notification("Waktunya Pulang!", {
             body: `Halo ${user?.display_name}, sekarang sudah jam ${format(outTime, 'HH:mm')}. Waktunya absen pulang!`,
-            icon: "/logo.png",
-            vibrate: [200, 100, 200]
+            icon: "/logo.png"
           });
         }, diff);
         return () => clearTimeout(timer);
@@ -641,10 +644,6 @@ export default function App() {
       </div>
     );
   }
-
-  const schedule = getWorkSchedule(currentTime);
-  const checkIn = todayRecords.find(r => r.type === 'in');
-  const checkOut = todayRecords.find(r => r.type === 'out');
 
   return (
     <div className="h-screen bg-[#F8FAFC] flex flex-col max-w-md mx-auto shadow-2xl relative overflow-hidden">
