@@ -173,15 +173,22 @@ export default function App() {
 
       if (diff > 0) {
         console.log(`Scheduling out notification in ${Math.round(diff/1000)} seconds for ${format(outTime, 'HH:mm')}`);
-        const timer = setTimeout(() => {
+        const timer = setTimeout(async () => {
           try {
             if (Notification.permission === 'granted') {
-              new Notification("Waktunya Pulang!", {
+              const notificationData = {
                 body: `Halo ${user?.display_name}, sekarang sudah jam ${format(outTime, 'HH:mm')}. Waktunya absen pulang!`,
                 icon: "/logo.png",
                 tag: "clock-out-reminder",
                 requireInteraction: true
-              });
+              };
+
+              if ('serviceWorker' in navigator) {
+                const registration = await navigator.serviceWorker.ready;
+                registration.showNotification("Waktunya Pulang!", notificationData);
+              } else {
+                new Notification("Waktunya Pulang!", notificationData);
+              }
             }
           } catch (e) {
             console.error("Failed to show notification:", e);
