@@ -132,6 +132,8 @@ export default function App() {
     return localStorage.getItem('notifications_enabled') !== 'false';
   });
 
+  const [targetType, setTargetType] = useState<'in' | 'out' | null>(null);
+
   const schedule = getWorkSchedule(currentTime);
   const checkIn = todayRecords.find(r => r.type === 'in');
   const checkOut = todayRecords.find(r => r.type === 'out');
@@ -170,17 +172,36 @@ export default function App() {
       const diff = outTime.getTime() - now.getTime();
 
       if (diff > 0) {
-        console.log(`Scheduling out notification in ${Math.round(diff/1000)} seconds`);
+        console.log(`Scheduling out notification in ${Math.round(diff/1000)} seconds for ${format(outTime, 'HH:mm')}`);
         const timer = setTimeout(() => {
-          new Notification("Waktunya Pulang!", {
-            body: `Halo ${user?.display_name}, sekarang sudah jam ${format(outTime, 'HH:mm')}. Waktunya absen pulang!`,
-            icon: "/logo.png"
-          });
+          try {
+            if (Notification.permission === 'granted') {
+              new Notification("Waktunya Pulang!", {
+                body: `Halo ${user?.display_name}, sekarang sudah jam ${format(outTime, 'HH:mm')}. Waktunya absen pulang!`,
+                icon: "/logo.png",
+                tag: "clock-out-reminder",
+                requireInteraction: true
+              });
+            }
+          } catch (e) {
+            console.error("Failed to show notification:", e);
+          }
         }, diff);
         return () => clearTimeout(timer);
       }
     }
   }, [checkIn?.scheduled_out_time, notificationPermission, isNotificationEnabled, user?.display_name]);
+
+  const sendTestNotification = () => {
+    if (Notification.permission === 'granted') {
+      new Notification("Tes Notifikasi", {
+        body: "Jika Anda melihat pesan ini, berarti notifikasi sudah berfungsi dengan baik!",
+        icon: "/logo.png"
+      });
+    } else {
+      requestNotificationPermission();
+    }
+  };
   const [historyFilter, setHistoryFilter] = useState({ start: '', end: '' });
   const [adminFilter, setAdminFilter] = useState({ start: '', end: '', userId: '' });
   const [filteredHistory, setFilteredHistory] = useState<AttendanceRecord[]>([]);
@@ -569,10 +590,12 @@ export default function App() {
           setIsCameraOpen(false);
           setCameraMessage(null);
           setPerformanceReport('');
+          setTargetType(null);
         }, 3000);
       } else {
         setIsCameraOpen(false);
         setPerformanceReport('');
+        setTargetType(null);
       }
       fetchTodayRecords();
       fetchHistory();
@@ -800,7 +823,12 @@ export default function App() {
               <motion.button 
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }} 
-                onClick={() => { requestLocation(); setIsCameraOpen(true); }} 
+                onClick={() => { 
+                  requestLocation(); 
+                  const type = todayRecords.some(r => r.type === 'in') ? 'out' : 'in';
+                  setTargetType(type);
+                  setIsCameraOpen(true); 
+                }} 
                 className="w-full py-4 bg-gradient-to-r from-brand-600 to-brand-700 text-white rounded-[2rem] font-bold shadow-xl shadow-brand-500/30 flex items-center justify-center gap-3 transition-all group mb-10"
               >
                 <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -1108,17 +1136,37 @@ export default function App() {
                     <p className="text-[10px] text-slate-400 font-medium">Aktifkan pengingat jam pulang otomatis</p>
                   </div>
                   {notificationPermission === 'granted' ? (
-                    <button 
-                      onClick={toggleNotification}
-                      className={cn(
-                        "px-4 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border",
-                        isNotificationEnabled 
-                          ? "bg-emerald-50 text-emerald-600 border-emerald-100" 
-                          : "bg-slate-200 text-slate-500 border-slate-300"
+                    <div className="flex flex-col gap-2 items-end">
+                      <div className="flex gap-2">
+                        <button 
+                          onClick={sendTestNotification}
+                          className="px-3 py-1.5 bg-brand-50 text-brand-600 rounded-xl text-[10px] font-bold uppercase tracking-wider border border-brand-100"
+                        >
+                          Tes
+                        </button>
+                        <button 
+                          onClick={toggleNotification}
+                          className={cn(
+                            "px-4 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border",
+                            isNotificationEnabled 
+                              ? "bg-emerald-50 text-emerald-600 border-emerald-100" 
+                              : "bg-slate-200 text-slate-500 border-slate-300"
+                          )}
+                        >
+                          {isNotificationEnabled ? 'On' : 'Off'}
+                        </button>
+                      </div>
+                      {window.self !== window.top && (
+                        <p className="text-[9px] text-brand-600 font-bold bg-brand-50 px-2 py-1 rounded-lg border border-brand-100">
+                          Buka di tab baru agar notifikasi berfungsi
+                        </p>
                       )}
-                    >
-                      {isNotificationEnabled ? 'On' : 'Off'}
-                    </button>
+                      {/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) && (
+                        <p className="text-[8px] text-slate-400 text-right font-medium">
+                          Tips: Tambahkan ke Home Screen agar notifikasi lebih lancar
+                        </p>
+                      )}
+                    </div>
                   ) : (
                     <button 
                       onClick={requestNotificationPermission}
@@ -1251,7 +1299,7 @@ export default function App() {
               </AnimatePresence>
 
               {/* Performance Report Field for Clock Out */}
-              {todayRecords.some(r => r.type === 'in') && (
+              {targetType === 'out' && (
                 <div className="w-full space-y-2">
                   <label className="block text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 ml-1">Laporan Kinerja Harian <span className="text-red-500">*</span></label>
                   <textarea 
