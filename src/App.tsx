@@ -192,14 +192,41 @@ export default function App() {
     }
   }, [checkIn?.scheduled_out_time, notificationPermission, isNotificationEnabled, user?.display_name]);
 
-  const sendTestNotification = () => {
+  const sendTestNotification = async () => {
+    if (!("Notification" in window)) {
+      alert("Browser Anda tidak mendukung notifikasi.");
+      return;
+    }
+
     if (Notification.permission === 'granted') {
-      new Notification("Tes Notifikasi", {
-        body: "Jika Anda melihat pesan ini, berarti notifikasi sudah berfungsi dengan baik!",
-        icon: "/logo.png"
-      });
+      try {
+        // Try service worker first as it's more reliable for mobile
+        if ('serviceWorker' in navigator) {
+          const registration = await navigator.serviceWorker.ready;
+          registration.showNotification("Tes Notifikasi", {
+            body: "Berhasil! Notifikasi sudah aktif dan berfungsi.",
+            icon: "/logo.png",
+            tag: "test-notification",
+            requireInteraction: true
+          });
+        } else {
+          new Notification("Tes Notifikasi", {
+            body: "Berhasil! Notifikasi sudah aktif dan berfungsi.",
+            icon: "/logo.png",
+            tag: "test-notification"
+          });
+        }
+      } catch (e) {
+        console.error("Notification failed:", e);
+        alert("Gagal mengirim notifikasi. Pastikan Anda tidak di mode Incognito dan browser mengizinkan notifikasi.");
+      }
+    } else if (Notification.permission === 'default') {
+      const permission = await requestNotificationPermission();
+      if (permission === 'granted') {
+        sendTestNotification();
+      }
     } else {
-      requestNotificationPermission();
+      alert("Izin notifikasi ditolak. Harap aktifkan izin notifikasi di pengaturan browser/HP Anda untuk situs ini.");
     }
   };
   const [historyFilter, setHistoryFilter] = useState({ start: '', end: '' });
@@ -1299,7 +1326,7 @@ export default function App() {
               </AnimatePresence>
 
               {/* Performance Report Field for Clock Out */}
-              {targetType === 'out' && (
+              {targetType === 'out' && !cameraMessage && (
                 <div className="w-full space-y-2">
                   <label className="block text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 ml-1">Laporan Kinerja Harian <span className="text-red-500">*</span></label>
                   <textarea 
